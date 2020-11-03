@@ -1,0 +1,210 @@
+@import '~vant/lib/index.css';
+@import './mixin';
+
+body {
+    min-width: 320px;
+    -webkit-font-smoothing: subpixel-antialiased;
+    color: #111A2E;
+    font-size: 14px;
+    background: linear-gradient(180deg, #E7ECF4 0%, #FFFFFF 100%) no-repeat;
+    background-size: 100% 232px;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a {
+    color: @gray-900;
+}
+
+
+.color-error {
+    color: @error;
+}
+
+.color-success {
+    color: @green;
+}
+
+.color-info {
+    color: @primary-main;
+}
+
+.color-gray900 {
+    color: @gray-900;
+}
+
+.color-gray700 {
+    color: @gray-700;
+}
+
+.color-gray500 {
+    color: @gray-500;
+}
+
+.color-gray300 {
+    color: @gray-300;
+}
+
+.color-gray100 {
+    color: @gray-100;
+}
+
+.color-gray80 {
+    color: @gray-80;
+}
+
+.color-gray50 {
+    color: @gray-50;
+}
+
+.van-field {
+    padding-left: 1.5*@grid  !important;
+    padding-right: 1.5*@grid  !important;
+    border-radius: 0.5*@grid;
+
+    background: linear-gradient(0deg, #F9F9FB, #F9F9FB), #F4F7FF;
+
+    input::placeholder {
+        color: #868E9E
+    }
+
+    &::after {
+        display: none;
+    }
+
+
+}
+
+.van-button {
+    border-radius: 6px;
+}
+
+.van-button--default {
+    background: linear-gradient(0deg, #F9F9FB, #F9F9FB), #F4F7FF;
+    border-color: #F4F7FF;
+}
+
+.van-button--disabled {
+    background: @gray-100;
+}
+
+.van-button--info {
+    background: @primary-main;
+    border-color: @primary-main;
+}
+
+.van-overlay {
+    background: rgba(0, 0, 0, .4);
+}
+
+
+.vxe-header--column {
+    background-color: @gray-50;
+    color: @gray-700;
+    font-weight: 400;
+    padding: 0 !important;
+    line-height: 40px;
+    height: 40px;
+}
+
+.vxe-body--column {
+    background-image: linear-gradient(@gray-100, @gray-100) !important;
+    color: @gray-500;
+
+    a {
+        color: @primary-main;
+        font-weight: 500;
+    }
+}
+
+.van-logos {
+    padding-right: @grid;
+    display: flex;
+
+    .van-image {
+        vertical-align: bottom;
+        position: relative;
+        background: #ffffff;
+        box-shadow: -2px 0 1px 0px #fff;
+
+        &:first-child {
+            margin-left: 0 !important;
+        }
+    }
+}
+
+
+.swap {
+    &-tips {
+        top: 20px;
+        right: 20px;
+        z-index: 2000;
+        position: fixed;
+
+        .van-icon {
+            padding: @grid;
+        }
+
+        &-msg {
+            animation: once 0.5s ease-in-out 1 forwards;
+            display: flex;
+            max-width: 350px;
+            min-width: 300px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background: #fff;
+
+            &-success {
+                color: @green
+            }
+            &-error {
+                color: @error;
+            }
+        }
+
+        &-content {
+
+            line-height: 1.5;
+            font-size: 14px;
+            padding: 5px 10px;
+            flex: 1
+        }
+
+
+
+        &-close {
+            animation: close 0.5s ease-in-out 1 forwards;
+        }
+
+        &-hide {
+            .tran;
+            height: 0;
+        }
+    }
+}
+
+@keyframes once {
+    0% {
+        transform: translate3d(0, -50px, 0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes close {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate3d(0, -50px, 0);
+        opacity: 0;
+    }
+}

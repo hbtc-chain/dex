@@ -1,0 +1,55 @@
+@import "../../libs/mixin";
+
+.trading {
+  padding: 0 @space;
+  margin: 0 -@space;
+
+  .title {
+    display: flex;
+    height: 7 * @grid;
+    align-items: center;
+    padding: 0 @space;
+    border-bottom: 1px solid @gray-50;
+    margin: -3*@grid -@space 2*@grid;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+
+    /deep/ .van-icon {
+      vertical-align: middle;
+      margin-right: @grid;
+      margin-top: -2px;
+    }
+  }
+}
+
+
+.list {
+  box-shadow: 0px 0px 12px rgba(31, 93, 193, 0.16);
+  border-radius: 6px;
+  margin: @grid @space;
+  background: @white;
+  z-index: 2;
+
+  .title {
+    height: 6* @grid;
+    line-height: 6* @grid;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+
+    border-bottom: 1px solid @gray-80;
+    padding: 0.5*@grid @space 0;
+    color: @gray-500;
+
+    span {
+      padding-right: 2*@grid ;
+      cursor: pointer;
+
+      &.current {
+        color: @black;
+      }
+    }
+  }
+}
