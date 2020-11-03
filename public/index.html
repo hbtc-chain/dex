@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+  <link rel="icon" href="https://static.bhfastime.com/bhop/image/EkxAF9jfT9vyzhyDp9woQNlNm_01fgQZDC2fTxM3UvY.png">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+  <script>
+    var uniqueId = 0;
+
+    function jsBridge(funcName, data, callback) {
+      if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) { //ios
+        setupWebViewJavascriptBridge(function (bridge) {
+          bridge.callHandler(funcName, data, callback);
+        });
+      } else if (navigator.userAgent.match(/android/i)) {
+        connectWebViewJavascriptBridge(function (bridge) {
+          if (uniqueId == 1) {
+            bridge.init(function (message, responseCallback) {
+              responseCallback(data)
+            });
+          }
+          if (window.WebViewJavascriptBridge) {
+            window.WebViewJavascriptBridge.callHandler(
+              funcName, data,
+              callback
+            );
+          } else {
+            bridge.callHandler(funcName, data, callback);
+          }
+        });
+      } else {
+        console.log('this is an error ouput');
+      }
+    }
+
+    function setupWebViewJavascriptBridge(callback) {
+
+      if (window.WebViewJavascriptBridge) {
+        return callback(WebViewJavascriptBridge);
+      }
+      if (window.WVJBCallbacks) {
+        return window.WVJBCallbacks.push(callback);
+      }
+      window.WVJBCallbacks = [callback];
+      var WVJBIframe = document.createElement('iframe');
+      WVJBIframe.style.display = 'none';
+      WVJBIframe.src = 'wvjbscheme://__BRIDGE_LOADED__';
+      document.documentElement.appendChild(WVJBIframe);
+      setTimeout(function () {
+        document.documentElement.removeChild(WVJBIframe)
+      }, 100)
+    }
+
+    function connectWebViewJavascriptBridge(callback) {
+      uniqueId++;
+      if (window.WebViewJavascriptBridge) {
+        callback(WebViewJavascriptBridge)
+      } else {
+        document.addEventListener(
+          'WebViewJavascriptBridgeReady',
+          function () {
+            callback(WebViewJavascriptBridge)
+          }, false);
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+      Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
+</html>

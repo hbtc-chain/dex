@@ -1,0 +1,34 @@
+@error: #ED3756;
+@blue: #2933b7;
+@green: #3ee4da;
+@white: #ffffff;
+@black: #000000;
+@orange: #FF922E;
+
+@gray-50: #f4f7ff;
+@gray-80: #edeff2;
+@gray-100: #e7ecf4;
+@gray-200: #B0BFDB;
+@gray-300: #acb5c3;
+@gray-500: #6e8196;
+@gray-700: #475563;
+@gray-900: #0a1825;
+
+@primary-main: #3375e0;
+@primary-light: #4299ff;
+
+@grid: 8px;
+@space: 10px;
+
+.tran(@p: all, @t: 0.5s, @f: ease) {
+    -webkit-transition: @p @t @f;
+    -moz-transition: @p @t @f;
+    -o-transition: @p @t @f;
+    transition: @p @t @f;
+}
+
+.text-hide {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1,0 +1,47 @@
+@import "../../libs/mixin";
+
+.swap {
+  .form {
+    /deep/.van-button__text {
+      margin-right: 2*@grid;
+      padding: 2px 0;
+      .text-hide
+    }
+    /deep/ .van-field__control {
+      .text-hide
+    }
+  }
+  .max {
+    font-size: 13px;
+    font-weight: 700;
+    color: @primary-main;
+    cursor: pointer;
+  }
+
+  .icon {
+    margin-left: @grid;
+  }
+
+  /deep/ .van-button--normal {
+    font-size: 17px;
+    //text-align: left;
+    padding: 0 1.5 * @grid;
+
+    i {
+      position: absolute;
+      right: 1.5 * @grid;
+      top: 1.5 * @grid;
+    }
+
+    .van-button__content {
+      justify-content: left;
+
+    }
+
+    .van-image {
+      vertical-align: middle;
+      margin-top: -2px;
+      margin-right: @grid;
+    }
+  }
+}
