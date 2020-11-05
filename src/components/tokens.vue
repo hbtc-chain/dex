@@ -28,23 +28,31 @@ Modal.token-filter(
         size="large",
         v-for="(item, index) in renderList",
         :key="item.symbol",
-        @click="selectToken(item.symbol)",
+        @click="selectToken(item)",
         :class="{ disabled: disabledSelect(item.symbol) }",
         :style="{ top: itemHeight * (index + startIndex) + 'px' }"
       )
         span.value
-          template(v-if="assets[item.symbol]") {{ assets[item.symbol].amount }}
-          template(v-else) 0
+          strong(v-if="assets[item.symbol]") {{ assets[item.symbol].amount }}
+          strong(v-else) 0
+          br
+          van-button(
+            size="mini",
+            v-if="userTokensMap[item.symbol]"
+            @click.stop="removeToken(item.symbol)"
+          ) - Remove
+
         template(#title)
           .left
             Logo(size="32", :tokens="[item.symbol]")
             .token
-              .title {{ item.symbol | toUP }}
+              .title {{ item.name | toUP }}
 </template>
 
 <script>
 import { mapState } from "vuex";
 
+const storageKey = "userTokens";
 export default {
   props: {
     value: {
@@ -61,9 +69,13 @@ export default {
   computed: {
     ...mapState(["tokens", "assets", "tokensMap", "mini"]),
     tokensList() {
-      const tokens = this.tokens.filter(
-        (el) => el.symbol.indexOf(this.keyword.toLocaleLowerCase()) > -1
-      );
+      const keyword = this.keyword.toLocaleLowerCase().trim();
+      const tokens = this.tokens.filter((el) => {
+        if (keyword.length > 1) {
+          return el.symbol.indexOf(keyword) > -1;
+        }
+        return el.verified || this.userTokensMap[el.symbol];
+      });
       if (this.tokenDesc) {
         tokens.reverse();
       }
@@ -77,6 +89,13 @@ export default {
         height: `${this.itemHeight * this.tokensList.length}px`,
       };
     },
+    userTokensMap() {
+      const map = {};
+      this[storageKey].forEach((el) => {
+        map[el] = true;
+      });
+      return map;
+    },
   },
   data() {
     return {
@@ -86,6 +105,7 @@ export default {
       visible: this.value,
       startIndex: 0,
       canNext: true,
+      userTokens: [],
     };
   },
   watch: {
@@ -97,12 +117,21 @@ export default {
     },
   },
   methods: {
+    removeToken(symbol) {
+      this[storageKey] = this[storageKey].filter((el) => el !== symbol);
+      localStorage[storageKey] = this[storageKey].join(",");
+    },
     disabledSelect(token) {
       return this.disabledItem.indexOf(token) > -1;
     },
-    selectToken(token) {
+    selectToken(item) {
+      const { symbol, verified } = item;
+      if (!verified && !this.userTokensMap[symbol]) {
+        this[storageKey].push(symbol);
+        localStorage[storageKey] = this[storageKey].join(",");
+      }
       this.visible = false;
-      this.$emit("change", token);
+      this.$emit("change", symbol);
     },
     listScroll() {
       if (this.canNext) {
@@ -116,6 +145,11 @@ export default {
         this.canNext = false;
       }
     },
+  },
+  created() {
+    if (localStorage[storageKey]) {
+      this[storageKey] = localStorage[storageKey].split(",");
+    }
   },
 };
 </script>

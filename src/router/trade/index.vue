@@ -43,8 +43,7 @@ Main
       :apiReady="apiReady",
       v-if="currentType === 'history'"
     )
-  van-popup(v-model="show", position="left", :style="{ height: '100%' }")
-    SideBar(:pair="pair", @change="switchPair")
+  SideBar(v-model="show", :pair="pair", @change="switchPair")
 </template>
 <script>
 import { mapState } from "vuex";
@@ -85,11 +84,7 @@ export default {
       errorText: "",
     };
   },
-  watch: {
-    symbols() {
-      this.init();
-    },
-  },
+
   methods: {
     errorMessage(result) {
       this.errorText = "";
@@ -170,25 +165,27 @@ export default {
       }
       fn = setTimeout(() => this.autoLoad(), this.delay.standard);
     },
-
-    init() {
-      if (this.symbols.length) {
-        const pair = (this.$route.params.id || "").toLocaleLowerCase();
-        if (this.symbols.length) {
-          this.pair = [...this.symbols].shift().id;
-          this.symbols.forEach((el) => {
-            if (el.id === pair) {
-              this.pair = pair;
-            }
-          });
-          [this.tokenA, this.tokenB] = this.pair.split("-");
-          this.autoLoad();
-        }
-      }
-    },
   },
   created() {
-    this.init();
+    const pair = (
+      this.$route.params.id ||
+      sessionStorage.selectedPairId ||
+      ""
+    ).toLocaleLowerCase();
+    const symbols = this.symbols.filter((el) => el.verified);
+
+    if (symbols.length) {
+      this.pair = [...symbols].shift().id;
+    }
+
+    this.symbols.forEach((el) => {
+      if (el.id === pair) {
+        this.pair = pair;
+      }
+    });
+
+    [this.tokenA, this.tokenB] = this.pair.split("-");
+    this.autoLoad();
   },
   beforeDestroy() {
     clearTimeout(fn);

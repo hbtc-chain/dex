@@ -36,12 +36,14 @@ export default {
   computed: {
     ...mapState(["tokensMap", "symbols"]),
     searchLists() {
-      if (this.keyword) {
-        return this.symbols.filter(
-          (el) => el.id.indexOf(this.keyword.toLocaleLowerCase()) > -1
-        );
-      }
-      return this.symbols;
+      const keyword = this.keyword.toLocaleLowerCase().trim();
+      const symbols = this.symbols.filter((el) => {
+        if (keyword.length > 1) {
+          return el.id.indexOf(keyword) > -1;
+        }
+        return el.verified;
+      });
+      return symbols;
     },
   },
   data() {

@@ -9,14 +9,14 @@
         .time {{ new Date(item.time * 1000).format('MM/dd hh:mm:ss') }}
       ul
         li
-          label {{ $lang('trade.tradeAmount') }}({{ item.tokenB | toUP }})
-          span {{ item.tokenBAmount.cutFixed(4) }}
-        li
           label {{ $lang('trade.avgPrice') }}({{ item.tokenB | toUP }})
           span {{ (item.tokenBAmount / item.tokenAAmount).cutFixed(4) }}
         li
           label {{ $lang('trade.filled') }}({{ item.tokenA | toUP }})
           span {{ item.tokenAAmount.cutFixed(4) }}
+        li
+          label {{ $lang('trade.tradeAmount') }}({{ item.tokenB | toUP }})
+          span {{ item.tokenBAmount.cutFixed(4) }}
       ul
         li
           label {{ $lang('trade.totalValue') }}
