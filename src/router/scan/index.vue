@@ -51,6 +51,13 @@ export default {
   },
   computed: {
     ...mapState(["tokensMap", "symbols", "delay"]),
+    prices() {
+      const price = {};
+      Object.keys(this.priceMap).forEach((el) => {
+        price[el] = this.priceMap[el].usd;
+      });
+      return price;
+    },
   },
   data() {
     return {
@@ -66,7 +73,7 @@ export default {
         tokenAAmount: "",
         tokenBAmount: "",
       },
-      prices: {},
+      priceMap: [],
     };
   },
   watch: {
@@ -74,6 +81,7 @@ export default {
       const pair = this.$route.params.id;
       if (pair) {
         this.pair = pair;
+        [this.tokenA, this.tokenB] = this.pair.split("-");
         this.getState();
       } else {
         this.pair = "";
@@ -82,6 +90,9 @@ export default {
   },
   methods: {
     getState() {
+      Object.keys(this.data).forEach((el) => {
+        this.data[el] = "";
+      });
       if (this.pair) {
         this.$axios
           .get("/api/v1/analytics/pairState", {
@@ -101,25 +112,19 @@ export default {
           }
         });
       }
+      this.getPrice();
     },
     getPrice() {
+      clearTimeout(fn);
       this.$axios
         .get("/api/v1/swap/prices", {
           params: {
-            tokens: this.tokens.join(","),
+            tokens: ["hbc", this.tokenA, this.tokenB].join(","),
           },
         })
         .then((result) => {
           if (result.code === 0) {
-            const prices = {};
-            const data = result.data.prices;
-            this.tokens.forEach((el) => {
-              if (data[el]) {
-                prices[el] = data[el].usd.cutFixed(4);
-              }
-            });
-
-            Object.assign(this.prices, prices);
+            this.priceMap = result.data.prices;
           }
         });
       fn = setTimeout(() => {
@@ -135,17 +140,9 @@ export default {
         this.pair = pair;
       }
     });
+    [this.tokenA, this.tokenB] = this.pair.split("-");
 
-    const prices = {};
-
-    this.tokens = Object.keys(this.tokensMap);
-
-    this.tokens.forEach((el) => {
-      prices[el] = 0;
-    });
-    this.prices = prices;
     this.getState();
-    this.getPrice();
   },
   beforeDestroy() {
     clearTimeout(fn);

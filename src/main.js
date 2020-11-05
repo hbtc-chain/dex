@@ -147,6 +147,7 @@ const getPairs = (tokensMap, init) => {
         })
 
         symbols.push({
+          verified: el.verified,
           id: symbol,
           tokenA,
           tokenB
@@ -175,7 +176,7 @@ const getPairs = (tokensMap, init) => {
 }
 
 const getTokens = () => {
-  axios.get("/api/v1/tokens?page=1&page_size=1000").then((result) => {
+  axios.get("/api/v1/swap/liteTokens").then((result) => {
     if (result.code === 0) {
       const tokens = result.data.items;
       const tokensMap = {};

@@ -1,51 +1,59 @@
 <template lang="pug">
-vxe-table(:data="pairs", border="inner")
-  vxe-table-column(
-    field="pair",
-    :title="$lang('scan.pairs.name')",
-    minWidth="180"
+div
+  vxe-table(:data="slicePairs", border="inner")
+    vxe-table-column(
+      field="pair",
+      :title="$lang('scan.pairs.name')",
+      minWidth="180"
+    )
+      template(v-slot="{ row }")
+        router-link(
+          :to="{ name: 'scanDetail', params: { id: `${row.tokenA}-${row.tokenB}` } }"
+        ) {{ row.tokenA | toUP }}-{{ row.tokenB | toUP }}
+    vxe-table-column(
+      field="liquidity",
+      :title="$lang('scan.pairs.liquidity')",
+      minWidth="130",
+      sortable,
+      align="right"
+    )
+      template(v-slot="{ row }") ${{ row.liquidity.cutFixed(4) }}
+    vxe-table-column(
+      field="volume24Hr",
+      :title="$lang('scan.pairs.volume24h')",
+      minWidth="180",
+      sortable,
+      align="right"
+    )
+      template(v-slot="{ row }") ${{ row.volume24Hr.cutFixed(4) }}
+    vxe-table-column(
+      field="volume7D",
+      :title="$lang('scan.pairs.volume7d')",
+      minWidth="180",
+      sortable,
+      align="right"
+    )
+      template(v-slot="{ row }") ${{ row.volume7D.cutFixed(4) }}
+    vxe-table-column(
+      field="tradeCount24Hr",
+      :title="$lang('scan.pairs.fees')",
+      minWidth="180",
+      sortable,
+      align="right"
+    )
+      template(v-slot="{ row }") ${{ row.tradeCount24Hr.cutFixed(4) }}
+    vxe-table-column(field="age", title="", minWidth="180", align="right")
+      template(v-slot="{ row }")
+        van-button(size="mini", type="default", :to="`/pool/${row.pair}`") + {{ $lang('scan.pairs.addLiquidity') }}
+        | &nbsp;
+        van-button(size="mini", type="info", :to="`/swap/${row.pair}`") {{ $lang('scan.pairs.trade') }}
+  Page(
+    :total="pairs.length",
+    :value="currentPage",
+    :page-size="pageSize",
+    @on-change="changePage",
+    v-if="pairs.length"
   )
-    template(v-slot="{ row }")
-      router-link(
-        :to="{ name: 'scanDetail', params: { id: `${row.tokenA}-${row.tokenB}` } }"
-      ) {{ row.tokenA | toUP }}-{{ row.tokenB | toUP }}
-  vxe-table-column(
-    field="liquidity",
-    :title="$lang('scan.pairs.liquidity')",
-    minWidth="130",
-    sortable,
-    align="right"
-  )
-    template(v-slot="{ row }") ${{ row.liquidity.cutFixed(4) }}
-  vxe-table-column(
-    field="volume24Hr",
-    :title="$lang('scan.pairs.volume24h')",
-    minWidth="180",
-    sortable,
-    align="right"
-  )
-    template(v-slot="{ row }") ${{ row.volume24Hr.cutFixed(4) }}
-  vxe-table-column(
-    field="volume7D",
-    :title="$lang('scan.pairs.volume7d')",
-    minWidth="180",
-    sortable,
-    align="right"
-  )
-    template(v-slot="{ row }") ${{ row.volume7D.cutFixed(4) }}
-  vxe-table-column(
-    field="tradeCount24Hr",
-    :title="$lang('scan.pairs.fees')",
-    minWidth="180",
-    sortable,
-    align="right"
-  )
-    template(v-slot="{ row }") ${{ row.tradeCount24Hr.cutFixed(4) }}
-  vxe-table-column(field="age", title="", minWidth="180", align="right")
-    template(v-slot="{ row }")
-      van-button(size="mini", type="default", :to="`/pool/${row.pair}`") + {{ $lang('scan.pairs.addLiquidity') }}
-      | &nbsp;
-      van-button(size="mini", type="info", :to="`/swap/${row.pair}`") {{ $lang('scan.pairs.trade') }}
 </template>
 <script>
 import { mapState } from "vuex";
@@ -59,13 +67,24 @@ export default {
   },
   computed: {
     ...mapState(["tokensMap"]),
+    slicePairs() {
+      return this.pairs.slice(
+        (this.currentPage - 1) * this.pageSize,
+        this.currentPage * this.pageSize
+      );
+    },
   },
   data() {
     return {
       pairs: [],
+      currentPage: 1,
+      pageSize: 10,
     };
   },
   methods: {
+    changePage(n) {
+      this.currentPage = n;
+    },
     getPairsState() {
       this.$axios.get("/api/v1/analytics/pairsState").then((result) => {
         if (result.code === 0) {
