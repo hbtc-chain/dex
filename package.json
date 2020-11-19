@@ -12,7 +12,6 @@
     "axios": "^0.20.0",
     "bignumber.js": "^9.0.0",
     "core-js": "^3.6.5",
-    "decimal.js": "^10.2.0",
     "echarts": "^4.9.0",
     "uuid": "^8.3.0",
     "vant": "^2.10.3",

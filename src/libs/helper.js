@@ -188,6 +188,10 @@ const callHandler = (opt) => {
     window.HBC_wallet.callHandler(opt.name, opt.data, (responseData) => {
       nextStep(opt, responseData)
     });
+  } else if (window.HBTC_wallet_isready) {
+    window.HBTC_wallet.callHandler(opt.name, opt.data, (responseData) => {
+      nextStep(opt, responseData)
+    });
   } else if (opt.failed) {
     opt.failed()
   }

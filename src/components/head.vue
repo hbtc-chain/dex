@@ -18,12 +18,12 @@ div
         @click="processWin = true"
       )
         van-icon(name="underway-o", size="20")
-      Icon(
-        name="setting",
-        size="24",
-        @click="setState({ configWin: true })",
-        fill
-      )
+      //- Icon(
+      //-   name="setting",
+      //-   size="24",
+      //-   @click="setState({ configWin: true })",
+      //-   fill
+      //- )
       Icon(name="menus", size="24", @click="menuStatus = true", fill)
   Modal.process-list(
     v-model="processWin",

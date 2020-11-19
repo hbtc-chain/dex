@@ -226,10 +226,7 @@ export default {
           from: this.address,
           referer: this.address,
           receiver: this.address,
-          expired_at: `${
-            this.config.transactionDeadline * 60 +
-            Math.round(new Date().getTime() / 1000)
-          }`,
+          expired_at: "-1",
           order_id: uuidv4(),
           amount_in: "",
           price: "",

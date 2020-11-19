@@ -10,13 +10,13 @@
       ul
         li
           label {{ $lang('trade.avgPrice') }}({{ item.tokenB | toUP }})
-          span {{ (item.tokenBAmount / item.tokenAAmount).cutFixed(4) }}
+          span {{ (item.tokenBAmount / item.tokenAAmount).cutFixed(tokensMap[item.tokenB].showDecimals) }}
         li
           label {{ $lang('trade.filled') }}({{ item.tokenA | toUP }})
-          span {{ item.tokenAAmount.cutFixed(4) }}
+          span {{ item.tokenAAmount.cutFixed(tokensMap[item.tokenA].showDecimals) }}
         li
           label {{ $lang('trade.tradeAmount') }}({{ item.tokenB | toUP }})
-          span {{ item.tokenBAmount.cutFixed(4) }}
+          span {{ item.tokenBAmount.cutFixed(tokensMap[item.tokenB].showDecimals) }}
       ul
         li
           label {{ $lang('trade.totalValue') }}
@@ -57,7 +57,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["address"]),
+    ...mapState(["address", "tokensMap"]),
     sliceTrades() {
       return this.data.slice(
         (this.currentPage - 1) * this.pageSize,
@@ -80,7 +80,7 @@ export default {
   methods: {
     changePage(n) {
       this.currentPage = n;
-    }
+    },
   },
 };
 </script>
