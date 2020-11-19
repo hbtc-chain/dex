@@ -12,9 +12,20 @@ Modal(
       van-button(size="mini", icon="arrow-left", @click="back") {{ $lang('head.back') }}
     van-cell(:border="false", title="HBTC Wallet", @click="connect", v-else)
       van-image(:src="walletLogo", radius="4", width="40", height="40")
-    Alert(v-if="errorText" type="error" icon="warning") {{errorText}}
+    Alert(v-if="errorText", type="error", icon="warning") {{ errorText }}
     .download {{ $lang('head.installed').replace('{value}', 'HBTC Wallet') }}
-      a.color-info(href="") {{ $lang('head.clickHere') }}
+      a.color-info(
+        href="https://chrome.google.com/webstore/detail/hbtc-wallet/ehibhohmlpipbaogcknmpmiibbllplph",
+        v-if="isChrome"
+      ) {{ $lang('head.clickHere') }}
+      a.color-info(
+        href="https://addons.mozilla.org/firefox/addon/hbtc-wallet/",
+        v-else-if="isFirefox"
+      ) {{ $lang('head.clickHere') }}
+      a.color-info(
+        :href="`https://explorer.hbtcchain.io/download?lang=${local}`",
+        v-else
+      ) {{ $lang('head.clickHere') }}
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
@@ -37,7 +48,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["mini"]),
+    ...mapState(["mini", "local"]),
   },
   data() {
     return {
@@ -46,6 +57,9 @@ export default {
       connectLoading: false,
       walletConnectId: "",
       errorText: "",
+      isChrome: Helper.isChrome,
+      isFirefox: Helper.isFirefox,
+      isWallet: Helper.isWallet,
     };
   },
   watch: {
@@ -62,6 +76,8 @@ export default {
       this.connectLoading = false;
       if (this.walletConnectId && window.HBC_wallet_isready) {
         window.HBC_wallet.cancel(this.walletConnectId);
+      } else if (this.walletConnectId && window.HBTC_wallet_isready) {
+        window.HBTC_wallet.cancel(this.walletConnectId);
       }
     },
     connect() {
