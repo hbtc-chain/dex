@@ -1,10 +1,11 @@
 <template lang="pug">
 .card
-  .title {{ title }}
-  .value
-    slot
-  .more
-    slot(name="more")
+  .card-wrap
+    .title {{ title }}
+    .value
+      slot
+    .more
+      slot(name="more")
 </template>
 <script>
 export default {
@@ -21,21 +22,29 @@ export default {
 
 .card {
   box-shadow: 0px 0px 12px rgba(31, 93, 193, 0.16);
-  border-radius: 10px;
+  border-radius: @grid;
   margin: 0 0 @grid;
   background: #fff;
-  padding: 3 * @grid 2 * @grid 2 * @grid;
-  position: relative;
+  height: 102px;
+  display: flex;
+  align-items: center;
+
+  &-wrap {
+    position: relative;
+    padding: 0 2 * @grid;
+    flex: 1;
+  }
 
   .title {
     color: @gray-500;
-    padding-bottom: 0.5 * @grid;
   }
 
   .value {
+    padding-top: @grid;
     font-weight: 700;
-    font-size: 26px;
-    line-height: 5 * @grid;
+    font-size: 20px;
+    line-height: 3 * @grid;
+    color: @gray-700;
   }
 
   .more {

@@ -1,9 +1,19 @@
 @import "../../libs/mixin";
 
 .container {
-    max-width: 640px;
+    max-width: 976px;
     margin: 0 auto;
     padding: 0 2 * @grid 2 * @grid;
+
+    &-small {
+
+        /deep/ .van-col--8,
+        /deep/ .van-col--16 {
+            width: 100%;
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+        }
+    }
 }
 
 .small-logo {
@@ -16,9 +26,19 @@
     font-weight: 500;
 }
 
-.pooled-tokens{
-    .item{
+.pooled-tokens {
+    .item {
         display: flex;
         align-items: center;
+        font-size: 16px;
+        height: 28px;
+        font-weight: 400;
+        span {
+            color: @gray-700;
+        }
     }
 }
+
+// .charts{
+//     span
+// }

@@ -137,7 +137,8 @@ export default {
       volume7d: "Volume (7d)",
       fees: "Fees (24hrs)",
       addLiquidity: "Add Liquidity",
-      trade: "Trade"
+      trade: "Trade",
+      action: "Action"
     },
     transactions: {
       title: "Transactions",

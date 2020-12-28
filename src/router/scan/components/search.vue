@@ -6,21 +6,21 @@
     :placeholder="$lang('scan.searchCoin')",
     clear-trigger="always",
     clearable,
-    size="small",
+    size="large",
     @focus="showSearchResult",
     @blur="hideSearchResult"
   )
   .result(v-show="searchResultStatus")
     .title {{ $lang(searchLists.length ? 'scan.result' : 'scan.noResult') }}
-    template(v-if="searchLists.length")
-      router-link.token(
-        :key="`${item.tokenA.symbol}-${item.tokenB.symbol}`"
-        v-for="item in searchLists",
-        @click.native="searchResultStatus = false",
-        :to="{ name: 'scanDetail', params: { id: `${item.tokenA.symbol}-${item.tokenB.symbol}` } }"
-      )
-        Logo(:tokens="[item.tokenA.symbol, item.tokenB.symbol]")
-        | {{ item.id | toUP }}
+    //- template(v-if="searchLists.length")
+    //-   router-link.token(
+    //-     :key="`${item.tokenA.symbol}-${item.tokenB.symbol}`"
+    //-     v-for="item in searchLists",
+    //-     @click.native="searchResultStatus = false",
+    //-     :to="{ name: 'scanDetail', params: { id: `${item.tokenA.symbol}-${item.tokenB.symbol}` } }"
+    //-   )
+    //-     Logo(:tokens="[item.tokenA.symbol, item.tokenB.symbol]")
+    //-     | {{ item.id | toUP }}
 </template>
 <script>
 import { mapState } from "vuex";
@@ -75,7 +75,15 @@ export default {
   z-index: 2;
 
   /deep/ .van-field {
-    background: @gray-100;
+    background: @white;
+    height: 6 * @grid;
+    border-radius: @grid;
+    &__control {
+      height: 5 * @grid;
+    }
+    &__left-icon .van-icon{
+      line-height: 5 * @grid;
+    }
   }
 
   /deep/ .van-cell {

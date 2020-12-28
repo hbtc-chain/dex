@@ -2,35 +2,35 @@
 .more(v-if="data.amountA && data.amountB")
   .item(v-if="data.transforDirection == 'B'")
     .lable {{ $lang('swap.minimumReceived') }}
-      Icon(name="question")
-    .value {{ data.result.minimumReceived }} {{ data.tokenB | toUP }}
+      // Icon(name="question")
+    .value {{ data.result.minimumReceived }} {{ data.tokenName(data.tokenB) }}
   .item(v-else)
     .lable {{ $lang('swap.maximumSold') }}
-      Icon(name="question")
-    .value {{ data.result.maximumSold }} {{ data.tokenA | toUP }}
+      // Icon(name="question")
+    .value {{ data.result.maximumSold }} {{ data.tokenName(data.tokenA) }}
   .item
     .lable {{ $lang('swap.priceImpact') }}
-      Icon(name="question")
+      // Icon(name="question")
     .value {{ data.result.priceImpact.cutFixed(2) }}%
   .item
     .lable {{ $lang('swap.liquidityProviderFee') }}
-      Icon(name="question")
-    .value {{ BigNumber(data.amountA).times(data.fee).toString(10) }} {{ data.tokenB | toUP }}
+      // Icon(name="question")
+    .value {{ BigNumber(data.amountA).times(data.fee).toString(10) }} {{ data.tokenName(data.tokenB) }}
   router-link.view(:to="viewLink") {{ $lang('swap.viewPairAnalytics') }}
-  .route(v-if="data.result.route.length>1")
+  .route(v-if="data.result.route.length > 1")
     .item
       .lable {{ $lang('swap.route') }}
-        Icon(name="question")
+        // Icon(name="question")
     van-row(type="flex", align="center")
       van-col(span="6")
         Logo(:tokens="[data.tokenA]")
-        | {{ data.tokenA | toUP }}
+        | {{ data.tokenName(data.tokenA) }}
       template(v-for="item in data.result.route")
         van-col(span="3")
           Icon(name="more-line", size="24")
         van-col(span="6")
           Logo(:tokens="[item.tokenB.symbol]")
-          | {{ item.tokenB.symbol | toUP }}
+          | {{ data.tokenName(item.tokenB.symbol) }}
 </template>
 
 <script>
@@ -69,11 +69,11 @@ export default {
 <style scoped lang="less">
 @import "../../../libs/mixin";
 .more {
-  margin: -@grid @space 0;
+  margin: -2 * @grid @space 0;
   background: linear-gradient(0deg, #f9f9fb, #f9f9fb), #f4f7ff;
   box-shadow: 0px 0px 12px rgba(31, 93, 193, 0.16);
-  border-radius: 6px;
-  padding: 2 * @grid @space;
+  border-radius: @grid;
+  padding: 3 * @grid @space;
   position: relative;
 
   .item {

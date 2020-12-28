@@ -10,7 +10,7 @@
     type="number",
     :formatter="formatterAmountB"
   )
-    template(#extra) {{ tokenB | toUP }}
+    template(#extra) {{ tokensMap[tokenB].name }}
   van-field(
     :placeholder="$lang('trade.amount')",
     v-model="amount",
@@ -18,11 +18,11 @@
     type="number",
     :formatter="formatterAmountA"
   )
-    template(#extra) {{ tokenA | toUP }}
+    template(#extra) {{ tokensMap[tokenA].name }}
   .amount.color-gray500
     .label {{ $lang('trade.available') }}：
-    .value(v-if="side") {{ account.showAmountA }} {{ tokenA | toUP }}
-    .value(v-else) {{ account.showAmountB }} {{ tokenB | toUP }}
+    .value(v-if="side") {{ account.showAmountA }} {{ tokensMap[tokenA].name }}
+    .value(v-else) {{ account.showAmountB }} {{ tokensMap[tokenB].name }}
   .slider(v-model="sliderValue")
     van-slider(
       v-model="sliderValue",
@@ -34,7 +34,7 @@
         .custom-button {{ sliderValue }}
   .amount
     .label.color-gray500 {{ $lang('trade.totalAmount') }}：
-    strong.value {{ takeAmount }} {{ tokenB | toUP }}
+    strong.value {{ takeAmount }} {{ tokensMap[tokenB].name }}
   van-button.btn(
     :class="{ 'sell-btn': side }",
     block,
@@ -54,12 +54,8 @@
 import { mapState, mapActions } from "vuex";
 import { v4 as uuidv4 } from "uuid";
 import Helper from "@/libs/helper";
-import FormItem from "@/components/formItem.vue";
 
 export default {
-  components: {
-    FormItem,
-  },
   props: {
     pair: {
       type: String,

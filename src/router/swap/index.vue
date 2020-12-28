@@ -15,7 +15,7 @@ Main.swap
               height="24",
               :src="tokensMap[tokenA].logo"
             )
-            | {{ tokenName(tokenA) }}
+            | {{ tokenName(tokenA) || $lang('swap.selectToken') }}
             Icon(name="arrowdown", size="16")
         van-col(span="14")
           van-field(
@@ -38,7 +38,7 @@ Main.swap
             fill,
             :rotate="transforDirection === 'A'"
           )
-        van-col(span="12", style="textAlign:right")
+        van-col(span="12", style="text-align: right")
           Icon(name="setting", @click="setState({ configWin: true })", fill)
     FormItem(
       :lable="toLabel",
@@ -54,7 +54,7 @@ Main.swap
               height="24",
               :src="tokensMap[tokenB].logo"
             )
-            | {{ tokenName(tokenB) }}
+            | {{ tokenName(tokenB) || $lang('swap.selectToken') }}
             Icon(name="arrowdown", size="16")
         van-col(span="14")
           van-field(
@@ -118,15 +118,11 @@ Main.swap
 <script>
 import { mapState, mapActions } from "vuex";
 import Helper from "@/libs/helper";
-import FormItem from "@/components/formItem.vue";
-import Tokens from "@/components/tokens.vue";
 import More from "./components/more.vue";
 import ConfirmPayment from "./components/confirm-payment.vue";
 
 export default {
   components: {
-    FormItem,
-    Tokens,
     More,
     ConfirmPayment,
   },
@@ -181,11 +177,11 @@ export default {
       if (this.transforDirection === "B") {
         return this.$lang("swap.confirmWarningOutput")
           .replace("{amount}", this.result.minimumReceived)
-          .replace("{token}", this.tokenB.toLocaleUpperCase());
+          .replace("{token}", this.tokenName(this.tokenB));
       }
       return this.$lang("swap.confirmWarningInput")
         .replace("{amount}", this.result.maximumSold)
-        .replace("{token}", this.tokenA.toLocaleUpperCase());
+        .replace("{token}", this.tokenName(this.tokenA));
     },
     buttonStatus() {
       const data = {
@@ -203,7 +199,7 @@ export default {
       } else if (!assets || Number(this.amountA) > Number(assets.amount)) {
         data.text = this.$lang("swap.insufficientBalance").replace(
           "{token}",
-          this.tokenA.toLocaleUpperCase()
+          this.tokenName(this.tokenA)
         );
       } else if (!this.tokenA || !this.tokenB) {
         data.text = this.$lang("swap.selectToken");
@@ -229,101 +225,115 @@ export default {
       return `${this.$lang("swap.to")}(${this.$lang("swap.estimated")})`;
     },
     computeSwapPrice() {
-      const tokenA = this.tokenA.toLocaleUpperCase();
-      const tokenB = this.tokenB.toLocaleUpperCase();
       if (this.reversePrice) {
         const price = Helper.bigNumber(this.amountB)
           .div(this.amountA)
           .toString(10)
           .cutFixed(this.tokensMap[this.tokenB].showDecimals);
-        return [tokenB, tokenA, price];
+        return [this.tokenB, this.tokenA, price];
       }
       const price = Helper.bigNumber(this.amountA)
         .div(this.amountB)
         .toString(10)
         .cutFixed(this.tokensMap[this.tokenA].showDecimals);
-      return [tokenA, tokenB, price];
+      return [this.tokenA, this.tokenB, price];
     },
 
     swapPrice() {
       const [tokenA, tokenB, price] = this.computeSwapPrice;
       const str = this.$lang("swap.swapPrice");
       return str
-        .replace("{tokenA}", tokenA)
-        .replace("{tokenB}", tokenB)
+        .replace("{tokenA}", this.tokenName(tokenA))
+        .replace("{tokenB}", this.tokenName(tokenB))
         .replace("{price}", price);
     },
 
     confirmSwapPrice() {
       const [tokenA, tokenB, price] = this.computeSwapPrice;
-      return `${price} ${tokenA}/${tokenB}`;
-    },
-
-    dataResult() {
-      const result = [];
-      Helper.generateRouteNodeV2(
-        this.tokenA,
-        this.tokenB,
-        this.symbols
-      ).forEach((route) => {
-        const data = {
-          beforPrice: 1,
-          afterPrice: 1,
-          route,
-        };
-        if (this.transforDirection === "B") {
-          data.route.forEach((el) => {
-            const amountA = data.amountB || this.amountA;
-            data.amountB =
-              Helper.tokenAtoB(
-                el,
-                amountA,
-                this.fee,
-                this.tokensMap[el.tokenB.symbol].decimals
-              ) || "";
-            Object.assign(data, {
-              minimumReceived: Helper.minimumReceived(
-                amountA,
-                data.amountB,
-                this.config.slippageTolerance
-              ).cutFixed(this.tokensMap[this.tokenB].decimals),
-              ...Helper.priceImpact(el, data, amountA, data.amountB),
-            });
-          });
-          if (data.amountB > 0) {
-            result.push(data);
-          }
-        } else {
-          [...data.route].reverse().forEach((el) => {
-            const amountB = data.amountA || this.amountB;
-            data.amountA =
-              Helper.tokenBtoA(
-                el,
-                amountB,
-                this.fee,
-                this.tokensMap[el.tokenA.symbol].decimals
-              ) || "";
-
-            Object.assign(data, {
-              maximumSold: Helper.maximumSold(
-                data.amountA,
-                amountB,
-                this.config.slippageTolerance
-              ).cutFixed(this.tokensMap[this.tokenA].decimals),
-              ...Helper.priceImpact(el, data, data.amountA, amountB),
-            });
-          });
-          if (data.amountA > 0) {
-            result.push(data);
-          }
-        }
-      });
-      return result;
+      return `${price} ${this.tokenName(tokenA)}/${this.tokenName(tokenB)}`;
     },
   },
 
   methods: {
     ...mapActions(["setState"]),
+    tokenName(symbol) {
+      if (symbol) {
+        return this.tokensMap[symbol].name;
+      }
+      return "";
+    },
+    generateRoute(cb) {
+      if (this.tokenA && this.tokenB) {
+        Helper.generateRoute(
+          this.tokenA,
+          this.tokenB,
+          this.symbols,
+          (routes) => {
+            cb(routes);
+          }
+        );
+      }
+    },
+
+    dataResult(cb) {
+      this.generateRoute((routes) => {
+        const result = [];
+        routes.forEach((route) => {
+          const data = {
+            beforPrice: 1,
+            afterPrice: 1,
+            route,
+          };
+          if (this.transforDirection === "B") {
+            data.route.forEach((el) => {
+              const amountA = data.amountB || this.amountA;
+              data.amountB =
+                Helper.tokenAtoB(
+                  el,
+                  amountA,
+                  this.fee,
+                  this.tokensMap[el.tokenB.symbol].decimals
+                ) || "";
+              Object.assign(data, {
+                minimumReceived: Helper.minimumReceived(
+                  amountA,
+                  data.amountB,
+                  this.config.slippageTolerance
+                ).cutFixed(this.tokensMap[this.tokenB].decimals),
+                ...Helper.priceImpact(el, data, amountA, data.amountB),
+              });
+            });
+            if (data.amountB > 0) {
+              result.push(data);
+            }
+          } else {
+            [...data.route].reverse().forEach((el) => {
+              const amountB = data.amountA || this.amountB;
+              data.amountA =
+                Helper.tokenBtoA(
+                  el,
+                  amountB,
+                  this.fee,
+                  this.tokensMap[el.tokenA.symbol].decimals
+                ) || "";
+
+              Object.assign(data, {
+                maximumSold: Helper.maximumSold(
+                  data.amountA,
+                  amountB,
+                  this.config.slippageTolerance
+                ).cutFixed(this.tokensMap[this.tokenA].decimals),
+                ...Helper.priceImpact(el, data, data.amountA, amountB),
+              });
+            });
+            if (data.amountA > 0) {
+              result.push(data);
+            }
+          }
+        });
+        cb(result);
+      });
+    },
     submit(result) {
       if (result.code !== 200) {
         this.errorText = result.msg;
@@ -340,16 +350,9 @@ export default {
       return Helper.formatter(this.tokensMap, this.tokenB, val);
     },
 
-    BigNumber: Helper.bigNumber,
-
     showActionSheet(direction) {
       this.currentDirection = direction;
       this.tokenSheetWin = true;
-    },
-
-    // A && B tokenName
-    tokenName(token) {
-      return token ? token.toLocaleUpperCase() : this.$lang("swap.selectToken");
     },
 
     // 选取token
@@ -385,33 +388,36 @@ export default {
     },
 
     computedAmount() {
-      const result = [...this.dataResult];
-      const amountKey = `amount${this.transforDirection}`;
-      const tokenInfo = this.tokensMap[this[`token${this.transforDirection}`]];
-      if (result.length) {
-        result.sort((a, b) => {
-          if (this.transforDirection === "B") {
-            return b.amountB - a.amountB;
-          }
-          return a.amountA - b.amountA;
-        });
-        Object.assign(this.result, result[0]);
-      } else {
-        Object.assign(this.result, {
-          amountA: "",
-          amountB: "",
-          maximumSold: "",
-          minimumReceived: "",
-          priceImpact: "",
-          route: [],
-        });
-      }
+      this.dataResult((result) => {
+        const amountKey = `amount${this.transforDirection}`;
+        const tokenInfo = this.tokensMap[
+          this[`token${this.transforDirection}`]
+        ];
+        if (result.length) {
+          result.sort((a, b) => {
+            if (this.transforDirection === "B") {
+              return b.amountB - a.amountB;
+            }
+            return a.amountA - b.amountA;
+          });
+          Object.assign(this.result, result[0]);
+        } else {
+          Object.assign(this.result, {
+            amountA: "",
+            amountB: "",
+            maximumSold: "",
+            minimumReceived: "",
+            priceImpact: "",
+            route: [],
+          });
+        }
 
-      this[amountKey] = this.result[amountKey];
+        this[amountKey] = this.result[amountKey];
 
-      if (tokenInfo) {
-        this[amountKey] = this[amountKey].cutFixed(tokenInfo.decimals);
-      }
+        if (tokenInfo) {
+          this[amountKey] = this[amountKey].cutFixed(tokenInfo.decimals);
+        }
+      });
     },
 
     // A && B 资产

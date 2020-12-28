@@ -38,7 +38,7 @@ Modal.token-filter(
           br
           van-button(
             size="mini",
-            v-if="userTokensMap[item.symbol]"
+            v-if="userTokensMap[item.symbol]",
             @click.stop="removeToken(item.symbol)"
           ) - Remove
 
@@ -46,7 +46,8 @@ Modal.token-filter(
           .left
             Logo(size="32", :tokens="[item.symbol]")
             .token
-              .title {{ item.name | toUP }}
+              .title {{ tokensMap[item.symbol].fullName }}
+                Substr(:text="item.symbol")
 </template>
 
 <script>
@@ -72,7 +73,7 @@ export default {
       const keyword = this.keyword.toLocaleLowerCase().trim();
       const tokens = this.tokens.filter((el) => {
         if (keyword.length > 1) {
-          return el.symbol.indexOf(keyword) > -1;
+          return el.name.indexOf(keyword) > -1;
         }
         return el.verified || this.userTokensMap[el.symbol];
       });
@@ -158,7 +159,7 @@ export default {
 @import "../libs/mixin";
 .token-filter {
   height: 80%;
-  max-height: 795px;
+  max-height: 560px;
   .search {
     padding: @space;
     padding-top: 0;
@@ -215,8 +216,13 @@ export default {
       align-items: center;
       .title {
         font-weight: 500;
-        font-size: 17px;
+        font-size: 14px;
         color: @gray-900;
+        span {
+          display: block;
+          font-size: 12px;
+          color: @gray-300;
+        }
       }
     }
   }

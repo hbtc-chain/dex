@@ -24,14 +24,14 @@ Main.pool(:showTabs="tab === 'list'")
       )
         template(#title)
           Logo(:tokens="[item.pair.tokenA.symbol, item.pair.tokenB.symbol]")
-          | {{ item.pair.tokenA.symbol | toUP }}/{{ item.pair.tokenB.symbol | toUP }}
+          | {{tokensMap[item.pair.tokenA.symbol].fullName}}/{{tokensMap[item.pair.tokenB.symbol].fullName}}
         .more
           .item
-            .label {{ $lang('pool.pooled') }} {{ item.pair.tokenA.symbol | toUP }}
+            .label {{ $lang('pool.pooled') }} {{ tokensMap[item.pair.tokenA.symbol].name }}
             .value {{ item.pair.tokenA.amount.cutFixed(tokensMap[item.pair.tokenA.symbol].showDecimals) }}
               Logo(size="16", :tokens="[item.pair.tokenA.symbol]")
           .item
-            .label {{ $lang('pool.pooled') }} {{ item.pair.tokenB.symbol | toUP }}
+            .label {{ $lang('pool.pooled') }} {{ tokensMap[item.pair.tokenB.symbol].name }}
             .value {{ item.pair.tokenB.amount.cutFixed(tokensMap[item.pair.tokenB.symbol].showDecimals) }}
               Logo(size="16", :tokens="[item.pair.tokenB.symbol]")
           .item
@@ -112,10 +112,6 @@ export default {
     text-align: left;
     padding: 3 * @grid @space 2 * @grid;
     font-weight: 400;
-  }
-
-  /deep/ .van-popup--bottom.van-popup--round {
-    border-radius: @grid @grid 0 0;
   }
 
   /deep/ .van-action-sheet__close {

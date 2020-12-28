@@ -1,8 +1,8 @@
 <template lang="pug">
 .handicap
   van-row.handicap-title
-    van-col.handicap-price(span="12") {{ $lang('trade.price') }}({{ tokenB | toUP }})
-    van-col.handicap-amount(span="12") {{ $lang('trade.orderBookAmount') }}({{ tokenA | toUP }})
+    van-col.handicap-price(span="12") {{ $lang('trade.price') }} {{tokensMap[tokenB].name}}
+    van-col.handicap-amount(span="12") {{ $lang('trade.orderBookAmount') }} {{tokensMap[tokenA].name}}
   .handcap-list
     div
       .handicap-item(

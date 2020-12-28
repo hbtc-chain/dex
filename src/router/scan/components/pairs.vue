@@ -1,52 +1,60 @@
 <template lang="pug">
-div
+.pool-pair-list
   vxe-table(:data="slicePairs", border="inner")
     vxe-table-column(
       field="pair",
       :title="$lang('scan.pairs.name')",
-      minWidth="180"
+      minWidth="200"
     )
       template(v-slot="{ row }")
         router-link(
           :to="{ name: 'scanDetail', params: { id: `${row.tokenA}-${row.tokenB}` } }"
-        ) {{ row.tokenA | toUP }}-{{ row.tokenB | toUP }}
+        )
+          .logo
+            Logo(:tokens="[row.tokenA, row.tokenB]")
+            | {{ tokensMap[row.tokenA].name }}-{{ tokensMap[row.tokenB].name }}
     vxe-table-column(
       field="liquidity",
       :title="$lang('scan.pairs.liquidity')",
-      minWidth="130",
+      minWidth="135",
       sortable,
-      align="right"
+      show-overflow
     )
       template(v-slot="{ row }") ${{ row.liquidity.cutFixed(4) }}
     vxe-table-column(
       field="volume24Hr",
       :title="$lang('scan.pairs.volume24h')",
-      minWidth="180",
+      minWidth="135",
       sortable,
-      align="right"
+      show-overflow
     )
       template(v-slot="{ row }") ${{ row.volume24Hr.cutFixed(4) }}
     vxe-table-column(
       field="volume7D",
       :title="$lang('scan.pairs.volume7d')",
-      minWidth="180",
+      minWidth="135",
       sortable,
-      align="right"
+      show-overflow
     )
       template(v-slot="{ row }") ${{ row.volume7D.cutFixed(4) }}
     vxe-table-column(
       field="tradeCount24Hr",
       :title="$lang('scan.pairs.fees')",
-      minWidth="180",
+      minWidth="135",
       sortable,
-      align="right"
+      show-overflow
     )
       template(v-slot="{ row }") ${{ row.tradeCount24Hr.cutFixed(4) }}
-    vxe-table-column(field="age", title="", minWidth="180", align="right")
+    vxe-table-column(
+      field="age",
+      :title="$lang('scan.pairs.action')",
+      minWidth="210",
+      align="right"
+    )
       template(v-slot="{ row }")
-        van-button(size="mini", type="default", :to="`/pool/${row.pair}`") + {{ $lang('scan.pairs.addLiquidity') }}
+        van-button(type="default", :to="`/pool/${row.pair}`") + {{ $lang('scan.pairs.addLiquidity') }}
         | &nbsp;
-        van-button(size="mini", type="info", :to="`/swap/${row.pair}`") {{ $lang('scan.pairs.trade') }}
+        van-button(type="info", :to="`/swap/${row.pair}`") {{ $lang('scan.pairs.trade') }}
   Page(
     :total="pairs.length",
     :value="currentPage",
@@ -109,9 +117,21 @@ export default {
 </script>
 <style scoped lang="less">
 @import "../../../libs/mixin";
-/deep/ .van-button--default {
-  background: @gray-200;
-  color: #fff;
-  border-color: @gray-200;
+.pool-pair-list {
+  /deep/ .van-button--default {
+    background: fade(@primary-main, 30%);
+    color: @primary-main;
+    margin-right: 6px;
+  }
+  /deep/ .van-button{
+    height: 38px;
+    line-height: 38px;
+    border: none;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .logo {
+    display: flex;
+  }
 }
 </style>

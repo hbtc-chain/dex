@@ -12,18 +12,19 @@ Modal.pair-filter(
       clearable,
       :placeholder="$lang('trade.searchPair')"
     )
-  .pair-list
-    van-cell-group
+  .pair-list(@scroll="listScroll", ref="list")
+    van-cell-group(:style="listStyle")
       van-cell(
-        v-for="item in searchLists",
+        v-for="(item, index) in renderList",
         @click="switchPair(item)",
         :class="{ current: item.id === pair }",
-        :key="item.id"
+        :key="item.id",
+        :style="{ top: itemHeight * (index + startIndex) + 'px' }"
       )
         template(#title)
           Logo(:tokens="[item.tokenA.symbol, item.tokenB.symbol]", size="20")
-          strong {{ item.tokenA.symbol | toUP }}
-          span /{{ item.tokenB.symbol | toUP }}
+          strong {{ tokensMap[item.tokenA.symbol].fullName }}
+          span /{{ tokensMap[item.tokenB.symbol].fullName }}
         template(v-if="!item.verified")
           van-button(
             size="mini",
@@ -55,16 +56,31 @@ export default {
     },
   },
   computed: {
-    ...mapState(["symbols"]),
+    ...mapState(["symbols", "token", "tokensMap"]),
     searchLists() {
-      const keyword = this.keyword.toLocaleLowerCase().trim();
+      const keyword = this.keyword.toLocaleUpperCase().trim();
       const symbols = this.symbols.filter((el) => {
-        if (keyword.length > 1) {
-          return el.id.indexOf(keyword) > -1;
+        if (keyword.length) {
+          return (
+            [
+              this.tokensMap[el.tokenA.symbol].fullName,
+              this.tokensMap[el.tokenB.symbol].fullName,
+            ]
+              .join("/")
+              .indexOf(keyword) > -1
+          );
         }
         return el.verified || this.userPairMap[el.id];
       });
       return symbols;
+    },
+    renderList() {
+      return [...this.searchLists].slice(this.startIndex, this.startIndex + 20);
+    },
+    listStyle() {
+      return {
+        height: `${this.itemHeight * this.searchLists.length}px`,
+      };
     },
     userPairMap() {
       const map = {};
@@ -79,9 +95,24 @@ export default {
       keyword: "",
       visible: this.value,
       userPair: [],
+      itemHeight: 48,
+      canNext: true,
+      startIndex: 0,
     };
   },
   methods: {
+    listScroll() {
+      if (this.canNext) {
+        setTimeout(() => {
+          this.startIndex = Math.max(
+            0,
+            Math.floor(this.$refs.list.scrollTop / this.itemHeight) - 3
+          );
+          this.canNext = true;
+        }, 5);
+        this.canNext = false;
+      }
+    },
     removeToken(id) {
       this[storageKey] = this[storageKey].filter((el) => el !== id);
       localStorage[storageKey] = this[storageKey].join(",");
@@ -111,7 +142,7 @@ export default {
 
 .pair-filter {
   height: 80%;
-  max-height: 795px;
+  max-height: 560px;
 
   .search {
     padding: 0 @space @space;
@@ -141,9 +172,16 @@ export default {
     will-change: transform;
     direction: ltr;
     overflow-y: scroll;
+
+    /deep/ .van-cell-group {
+      position: relative;
+    }
+
     /deep/ .van-cell {
+      left: 0;
+      position: absolute;
       cursor: pointer;
-      height: 48px;
+      height: 6 * @grid;
       align-items: center;
       font-size: 13px;
       font-weight: 500;

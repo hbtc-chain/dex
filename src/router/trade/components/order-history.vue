@@ -5,17 +5,17 @@
       .title
         .type
           span(:class="`type-${item.type}`") {{ $lang(`trade.${types[item.type]}`) }}
-          span {{ item.tokenA | toUP }}/{{ item.tokenB | toUP }}
+          span {{ tokensMap[item.tokenA].name }}/{{ tokensMap[item.tokenB].name }}
         .time {{ new Date(item.time * 1000).format('MM/dd hh:mm:ss') }}
       ul
         li
-          label {{ $lang('trade.avgPrice') }}({{ item.tokenB | toUP }})
+          label {{ $lang('trade.avgPrice') }}({{ tokensMap[item.tokenB].name }})
           span {{ (item.tokenBAmount / item.tokenAAmount).cutFixed(tokensMap[item.tokenB].showDecimals) }}
         li
-          label {{ $lang('trade.filled') }}({{ item.tokenA | toUP }})
+          label {{ $lang('trade.filled') }}({{ tokensMap[item.tokenA].name }})
           span {{ item.tokenAAmount.cutFixed(tokensMap[item.tokenA].showDecimals) }}
         li
-          label {{ $lang('trade.tradeAmount') }}({{ item.tokenB | toUP }})
+          label {{ $lang('trade.tradeAmount') }}({{ tokensMap[item.tokenB].name }})
           span {{ item.tokenBAmount.cutFixed(tokensMap[item.tokenB].showDecimals) }}
       ul
         li
