@@ -1,6 +1,8 @@
 <template lang="pug">
 .block
-  .title {{ title }}
+  .title
+    slot(name="title")
+      | {{ title }}
   slot
 </template>
 <script>
@@ -17,8 +19,8 @@ export default {
 @import "../../../libs/mixin";
 .block {
   box-shadow: 0px 0px 12px rgba(31, 93, 193, 0.16);
-  border-radius: 10px;
-  margin: 0 0 @grid;
+  border-radius: @grid;
+  margin: 0 0 2 * @grid;
   background: #fff;
   padding: @grid;
 
@@ -27,6 +29,10 @@ export default {
     font-size: 16px;
     line-height: 22px;
     padding: 2 * @grid @grid;
+    span {
+      margin-right: 3 * @grid;
+      cursor: pointer;
+    }
   }
 }
 </style>

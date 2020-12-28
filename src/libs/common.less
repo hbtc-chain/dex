@@ -6,8 +6,8 @@ body {
     -webkit-font-smoothing: subpixel-antialiased;
     color: #111A2E;
     font-size: 14px;
-    background: linear-gradient(180deg, #E7ECF4 0%, #FFFFFF 100%) no-repeat;
-    background-size: 100% 232px;
+    background: #355c95;
+    background-repeat: no-repeat;
 }
 
 a:hover {
@@ -67,7 +67,7 @@ a {
     background: linear-gradient(0deg, #F9F9FB, #F9F9FB), #F4F7FF;
 
     input::placeholder {
-        color: #868E9E
+        color: @gray-500
     }
 
     &::after {
@@ -78,12 +78,12 @@ a {
 }
 
 .van-button {
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 .van-button--default {
     background: linear-gradient(0deg, #F9F9FB, #F9F9FB), #F4F7FF;
-    border-color: #F4F7FF;
+    border-color: @gray-50
 }
 
 .van-button--disabled {
@@ -100,24 +100,45 @@ a {
 }
 
 
+.vxe-cell {
+    font-size: 12px;
+}
+
 .vxe-header--column {
-    background-color: @gray-50;
-    color: @gray-700;
-    font-weight: 400;
-    padding: 0 !important;
-    line-height: 40px;
-    height: 40px;
+    background: @gray-50 !important;
+    color: @gray-500 !important;
+    font-weight: 400 !important;
+    height: 32px !important;
+
+    &:first-child {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+    }
+
+    &:last-child {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+}
+
+.vxe-body--row {
+    border-bottom-color: @gray-100;
 }
 
 .vxe-body--column {
-    background-image: linear-gradient(@gray-100, @gray-100) !important;
-    color: @gray-500;
+    height: 8*@grid;
 
     a {
         color: @primary-main;
         font-weight: 500;
     }
 }
+
+.vxe-table--header-border-line {
+    display: none;
+}
+
+
 
 .van-logos {
     padding-right: @grid;
@@ -155,12 +176,29 @@ a {
             border-radius: 4px;
             margin-bottom: 10px;
             background: #fff;
+            min-height: 7*@grid;
+            color: @gray-700;
+            align-items: center;
+
+            .van-icon {
+                font-size: 16px;
+                color: @gray-900
+            }
 
             &-success {
-                color: @green
+                border-left: 4px solid @green;
+
+                .van-icon-checked {
+                    color: @green;
+                }
             }
+
             &-error {
-                color: @error;
+                border-left: 4px solid @error;
+
+                .van-icon-clear {
+                    color: @error;
+                }
             }
         }
 

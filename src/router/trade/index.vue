@@ -2,8 +2,11 @@
 Main
   .trading
     .title(:border="false", @click="show = true")
-      Icon(name="menufold1", size="24")
-      | {{ tokenA | toUP }} / {{ tokenB | toUP }}
+      .pair-name
+        Icon(name="menufold1", size="24")
+        | {{ tokensMap[tokenA].name }} / {{ tokensMap[tokenB].name }}
+      .pair-logo
+        Logo(:tokens="[tokenA, tokenB]")
     Alert(type="error", icon="warning", v-if="errorText") {{ errorText }}
     van-row(:gutter="10")
       van-col(span="12")
@@ -47,7 +50,6 @@ Main
 </template>
 <script>
 import { mapState } from "vuex";
-import FormItem from "@/components/formItem.vue";
 import SideBar from "./components/side-bar.vue";
 import OpenOrder from "./components/open-order.vue";
 import OrderBook from "./components/order-book.vue";
@@ -57,7 +59,6 @@ import Trading from "./components/trading.vue";
 let fn = null;
 export default {
   components: {
-    FormItem,
     SideBar,
     OpenOrder,
     OrderHistory,
@@ -167,11 +168,8 @@ export default {
     },
   },
   created() {
-    const pair = (
-      this.$route.params.id ||
-      sessionStorage.selectedPairId ||
-      ""
-    ).toLocaleLowerCase();
+    const pair = this.$route.params.id || sessionStorage.selectedPairId || "";
+
     const symbols = this.symbols.filter((el) => el.verified);
 
     if (symbols.length) {
@@ -185,6 +183,7 @@ export default {
     });
 
     [this.tokenA, this.tokenB] = this.pair.split("-");
+
     this.autoLoad();
   },
   beforeDestroy() {

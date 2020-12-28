@@ -5,11 +5,11 @@ div
       v-for="(item, key) in option",
       size="small",
       :type="interval === item ? 'info' : 'default'",
-      @click="getKline(item)"
+      @click="getKline(item)",
       :key="item"
     ) {{ $lang(`scan.${key}`) }}
   .charts
-    div(style="height:300px", ref="charts")
+    div(style="height: 300px", ref="charts")
     .loading
       van-loading(v-if="loading")
 </template>
@@ -68,7 +68,7 @@ export default {
                     time: new Date(el.time * 1000).format("yyyy/MM/dd"),
                     value: el.value.cutFixed(2),
                   };
-                  return json
+                  return json;
                 })
               );
             }
@@ -182,7 +182,7 @@ export default {
   }
 }
 .charts {
-  height: 300px;
+  height: 314px;
   position: relative;
   .loading {
     position: absolute;

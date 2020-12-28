@@ -5,7 +5,7 @@ const isChrome = /chrome/.test(userAgent);
 const isFirefox = /firefox/.test(userAgent);
 const isWallet = /hbtcchainwallet/.test(userAgent);
 
-BigNumber.config({ DECIMAL_PLACES: 40 })
+BigNumber.config({ DECIMAL_PLACES: 40 });
 
 const getQueryVariable = (variable) => {
   const query = window.location.search.substring(1);
@@ -18,7 +18,7 @@ const getQueryVariable = (variable) => {
     }
   }
   return false;
-}
+};
 
 /**
  * 生成兑换路由
@@ -28,54 +28,25 @@ const getQueryVariable = (variable) => {
  * 从 pairs 匹配从 tokenA 到 tokenB 所有兑换途径，目前仅支持二跳，默认hbc做为中间跳转币种。
  *  */
 
-const generateRouteNodeV2 = (tokenA, tokenB, symbols, history = [], route = [], cacheSymbols = []) => {
-  if (!cacheSymbols.length) {
-    symbols.forEach((el) => {
-      cacheSymbols.push(el);
-      cacheSymbols.push({
-        id: [el.tokenB.symbol, el.tokenA.symbol].join('-'),
-        tokenB: el.tokenA,
-        tokenA: el.tokenB
-      })
-    })
-  }
-
-  const list = cacheSymbols.filter((el) => {
-    // 过滤列表包含 tokenA, 且历史路径里不存在已出现过的币对和反向币对, 且不能出现路径已存在的币种
-    if (el.tokenA.symbol === tokenA) {
-      const tempId = [el.tokenB.symbol, el.tokenA.symbol].join("-");
-      const tmp = history.filter((_el) => {
-        const match =
-          el.id === _el.id ||
-          tempId === _el.id ||
-          el.tokenB.symbol === _el.tokenA.symbol;
-        return match;
-      });
-      return tmp.length === 0;
+const generateRoute = (
+  tokenA,
+  tokenB,
+  symbols,
+  cb
+) => {
+  const workerUrl = "/worker.js";
+  const worker = new Worker(workerUrl);
+  worker.onmessage = (e) => {
+    if (cb) {
+      cb(e.data.route);
     }
-    return false;
+  };
+  worker.postMessage({
+    tokenA,
+    tokenB,
+    symbols,
   });
-
-  list.forEach((el) => {
-    if (el.tokenB.symbol === tokenB) {
-      if (history.length) {
-        route.push([...history, el]);
-      } else {
-        route.push([el]);
-      }
-    } else {
-      generateRouteNodeV2(
-        el.tokenB.symbol,
-        tokenB,
-        symbols,
-        [...history, el],
-        route,
-        cacheSymbols
-      );
-    }
-  });
-  return route;
-}
+};
 
 /**
  * 支付 -> 兑换成
@@ -86,15 +57,16 @@ const generateRouteNodeV2 = (tokenA, tokenB, symbols, history = [], route = [], 
 
 const tokenAtoB = (pairs, amountA, fee, decimals) => {
   let a = 0;
-  const nAmount = BigNumber(amountA).times(BigNumber(1).minus(fee))
+  const nAmount = BigNumber(amountA).times(BigNumber(1).minus(fee));
   if (pairs && amountA) {
-    a = nAmount.times(pairs.tokenB.amount)
+    a = nAmount
+      .times(pairs.tokenB.amount)
       .div(nAmount.plus(pairs.tokenA.amount))
       .toString(10)
-      .cutFixed(decimals)
+      .cutFixed(decimals);
   }
   return a;
-}
+};
 
 /**
  * 兑换成 -> 支付
@@ -110,10 +82,10 @@ const tokenBtoA = (pairs, amountB, fee, decimals) => {
       .div(BigNumber(pairs.tokenB.amount).minus(amountB))
       .div(BigNumber(1).minus(fee))
       .toString(10)
-      .cutFixed(decimals)
+      .cutFixed(decimals);
   }
   return a;
-}
+};
 
 /**
  * 最小接收额
@@ -150,51 +122,93 @@ const maximumSold = (amountA, amountB, slippageTolerance) => BigNumber(amountA)
 const priceImpact = (pair, data, amountA, amountB) => {
   const beforPrice = BigNumber(pair.tokenA.amount)
     .div(pair.tokenB.amount)
-    .times(data.beforPrice)
+    .times(data.beforPrice);
 
   const afterPrice = BigNumber(pair.tokenA.amount)
     .plus(amountA)
     .div(BigNumber(pair.tokenB.amount).minus(amountB))
-    .times(data.afterPrice)
+    .times(data.afterPrice);
 
   return {
     beforPrice: beforPrice.toString(10),
     afterPrice: afterPrice.toString(10),
-    priceImpact: afterPrice.minus(beforPrice).div(beforPrice).times(100).toString(10)
-  }
-}
+    priceImpact: afterPrice
+      .minus(beforPrice)
+      .div(beforPrice)
+      .times(100)
+      .toString(10),
+  };
+};
 
 const nextStep = (opt, data) => {
   // console.log('wallet==============', data)
   if (data.code === 200 && opt.success) {
-    opt.success(data)
+    opt.success(data);
   }
   if (data.code !== 200 && opt.error) {
-    opt.error(data)
+    opt.error(data);
   }
   if (opt.done) {
-    opt.done(data)
+    opt.done(data);
   }
-}
+};
 
 const callHandler = (opt) => {
-  // console.log(opt.data)
+  if (opt.data) {
+    Object.assign(opt.data.value, { dex_id: 0 })
+  }
+  console.log(opt.data)
   if (isWallet) {
     window.jsBridge(opt.name, opt.data, (responseData) => {
       const data = JSON.parse(responseData);
-      nextStep(opt, data)
+      nextStep(opt, data);
     });
   } else if (window.HBC_wallet_isready) {
     window.HBC_wallet.callHandler(opt.name, opt.data, (responseData) => {
-      nextStep(opt, responseData)
+      nextStep(opt, responseData);
     });
   } else if (window.HBTC_wallet_isready) {
     window.HBTC_wallet.callHandler(opt.name, opt.data, (responseData) => {
-      nextStep(opt, responseData)
+      nextStep(opt, responseData);
     });
   } else if (opt.failed) {
-    opt.failed()
+    opt.failed();
   }
+};
+
+const nFormatter = (num, digits = 2) => {
+  if (!num) {
+    return ""
+  }
+  if (num > 1E3) {
+    return [Math.round(num / 1E3), 'K'].join('')
+  }
+  return num.cutFixed(digits)
+  // const si = [
+  //   { value: 1, symbol: "" },
+  //   { value: 1E3, symbol: "K" },
+  //   { value: 1E6, symbol: "M" },
+  //   { value: 1E9, symbol: "G" },
+  //   { value: 1E12, symbol: "T" },
+  //   { value: 1E15, symbol: "P" },
+  //   { value: 1E18, symbol: "E" }
+  // ];
+  // const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+  // let len = si.length - 1;
+  // while (len > 0) {
+  //   len -= 1
+  //   if (num >= si[len].value) {
+  //     break;
+  //   }
+  // }
+  // return (num / si[len].value).toFixed(digits).replace(rx, "$1") + si[len].symbol;
+}
+
+const Substr = (str = "") => {
+  if (str.length > 6) {
+    return `${str.substring(0, 4)}..`
+  }
+  return str
 }
 
 export default {
@@ -205,10 +219,12 @@ export default {
   bigNumber: BigNumber,
   tokenAtoB,
   tokenBtoA,
-  generateRouteNodeV2,
+  generateRoute,
   minimumReceived,
   maximumSold,
   priceImpact,
+  nFormatter,
+  Substr,
   formatter(tokensMap, tokenId, val) {
     const value = val.split(".");
     const token = tokensMap[tokenId];
@@ -222,26 +238,26 @@ export default {
     return val;
   },
 
-  symbol2Token(string = '', tokensMap = {}) {
-    const [tokenA, tokenB] = string.toLocaleLowerCase().split('-');
-    const tokens = { tokenA: "", tokenB: "" }
+  symbol2Token(string = "", tokensMap = {}) {
+    const [tokenA, tokenB] = string.split("-");
+    const tokens = { tokenA: "", tokenB: "" };
 
     if (tokenA && tokensMap[tokenA]) {
-      tokens.tokenA = tokenA
+      tokens.tokenA = tokenA;
     }
 
     if (tokenB && tokensMap[tokenB]) {
-      tokens.tokenB = tokenB
+      tokens.tokenB = tokenB;
     }
 
-    return tokens
+    return tokens;
   },
   getLang() {
     const list = ["en-us", "zh-cn"];
     const navLang = navigator.language.toLocaleLowerCase();
     const { locale } = localStorage;
     let language = "en-us";
-    const query = getQueryVariable('lang')
+    const query = getQueryVariable("lang");
     if (list.indexOf(navLang) > -1) {
       language = navLang;
     }

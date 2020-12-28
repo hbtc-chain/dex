@@ -27,7 +27,7 @@ div
               height="24",
               :src="tokensMap[tokenA].logo"
             )
-            | {{ tokenName(tokenA) }}
+            | {{ tokenName(tokenA) || $lang('swap.selectToken') }}
             Icon(name="arrowdown", size="16")
         van-col(span="14")
           van-field(
@@ -57,7 +57,7 @@ div
               height="24",
               :src="tokensMap[tokenB].logo"
             )
-            | {{ tokenName(tokenB) }}
+            | {{ tokenName(tokenB) || $lang('swap.selectToken') }}
             Icon(name="arrowdown", size="16")
         van-col(span="14")
           van-field(
@@ -80,10 +80,10 @@ div
         van-row
           van-col(span="8")
             strong(v-if="tokenA") {{ prices[tokenA].cutFixed(tokensMap[tokenA].showDecimals) }}
-            span {{ $lang('pool.swapPrice').replace('{tokenA}', tokenA.toLocaleUpperCase()).replace('{tokenB}', tokenB.toLocaleUpperCase()) }}
+            span {{ $lang('pool.swapPrice').replace('{tokenA}', tokensMap[tokenA].name).replace('{tokenB}', tokensMap[tokenB].name) }}
           van-col(span="8")
             strong(v-if="tokenB") {{ prices[tokenB].cutFixed(tokensMap[tokenB].showDecimals) }}
-            span {{ $lang('pool.swapPrice').replace('{tokenA}', tokenB.toLocaleUpperCase()).replace('{tokenB}', tokenA.toLocaleUpperCase()) }}
+            span {{ $lang('pool.swapPrice').replace('{tokenA}', tokensMap[tokenB].name).replace('{tokenB}', tokensMap[tokenA].name) }}
           van-col(span="8")
             strong {{ shareOfPool }}%
             span {{ $lang('pool.shareOfPool') }}
@@ -93,10 +93,10 @@ div
         van-row
           van-col(span="12")
             strong {{ userShare.pair.tokenA.amount.cutFixed(tokensMap[tokenA].showDecimals) }}
-            span {{ tokenA | toUP }}
+            span {{ tokenName(tokenA) }}
           van-col(span="12")
             strong {{ userShare.pair.tokenB.amount.cutFixed(tokensMap[tokenB].showDecimals) }}
-            span {{ tokenB | toUP }}
+            span {{ tokenName(tokenB) }}
     // 没有流动性
     template(v-else)
       .info
@@ -104,10 +104,10 @@ div
         van-row
           van-col(span="8")
             strong {{ amountA || 0 }}
-            span {{ tokenA | toUP }}
+            span {{ tokenName(tokenA) }}
           van-col(span="8")
             strong {{ amountB || 0 }}
-            span {{ tokenB | toUP }}
+            span {{ tokenName(tokenB) }}
           van-col(span="8")
             strong(v-if="amountA && amountB") 100%
             strong(v-else) 0%
@@ -156,10 +156,10 @@ div
           Logo(size="16", :tokens="[tokenB]")
       .item
         .lable {{ $lang('pool.price') }}
-        .value 1 {{ tokenA | toUP }} = {{ prices[tokenB].cutFixed(tokensMap[tokenA].showDecimals) }} {{ tokenB | toUP }}
+        .value 1 {{ tokenName(tokenA) }} = {{ prices[tokenB].cutFixed(tokensMap[tokenA].showDecimals) }} {{ tokenName(tokenB) }}
       .item
         .lable &nbsp;
-        .value 1 {{ tokenB | toUP }} = {{ prices[tokenA].cutFixed(tokensMap[tokenB].showDecimals) }} {{ tokenA | toUP }}
+        .value 1 {{ tokenName(tokenB) }} = {{ prices[tokenA].cutFixed(tokensMap[tokenB].showDecimals) }}{{ tokenName(tokenA) }}
       .item
         .lable {{ $lang('pool.shareOfPool') }}
         .value {{ shareOfPool }}%
@@ -169,8 +169,6 @@ div
 <script>
 import { mapState, mapActions } from "vuex";
 import Helper from "@/libs/helper";
-import FormItem from "@/components/formItem.vue";
-import Tokens from "@/components/tokens.vue";
 
 export default {
   props: {
@@ -182,10 +180,6 @@ export default {
       type: String,
       default: "",
     },
-  },
-  components: {
-    FormItem,
-    Tokens,
   },
   computed: {
     ...mapState([
@@ -213,7 +207,7 @@ export default {
       } else if (!assetsA || this.amountA > Number(assetsA.amount)) {
         data.text = this.$lang("swap.insufficientBalance").replace(
           "{token}",
-          this.tokenA.toLocaleUpperCase()
+          this.tokensMap[this.tokenA].name
         );
       } else if (
         (!assetsB || this.amountB > Number(assetsB.amount)) &&
@@ -221,7 +215,7 @@ export default {
       ) {
         data.text = this.$lang("swap.insufficientBalance").replace(
           "{token}",
-          this.tokenB.toLocaleUpperCase()
+          this.tokensMap[this.tokenB].name
         );
       } else if (!this.tokenA || !this.tokenB) {
         data.text = this.$lang("swap.selectToken");
@@ -297,6 +291,12 @@ export default {
   },
   methods: {
     ...mapActions(["pushTxs"]),
+    tokenName(symbol) {
+      if (symbol) {
+        return this.tokensMap[symbol].name;
+      }
+      return "";
+    },
     confirmAdd() {
       this.errorText = "";
       this.paymentSheetWin = true;
@@ -310,7 +310,7 @@ export default {
     depositedToken(token) {
       return this.$lang("pool.depositedToken").replace(
         "{token}",
-        token.toLocaleUpperCase()
+        this.tokensMap[token].name
       );
     },
     back() {
@@ -319,11 +319,6 @@ export default {
     showActionSheet(direction) {
       this.currentDirection = direction;
       this.tokenSheetWin = true;
-    },
-
-    // A && B tokenName
-    tokenName(token) {
-      return token ? token.toLocaleUpperCase() : this.$lang("swap.selectToken");
     },
 
     // 选取token
@@ -414,10 +409,10 @@ export default {
           }`,
           token_a: this.tokenA,
           token_b: this.tokenB,
-          min_token_a_amount: Helper.bigNumber(this.amountA)
+          max_token_a_amount: Helper.bigNumber(this.amountA)
             .times(this.tokensMap[this.tokenA].pow)
             .toString(10),
-          min_token_b_amount: Helper.bigNumber(this.amountB)
+          max_token_b_amount: Helper.bigNumber(this.amountB)
             .times(this.tokensMap[this.tokenB].pow)
             .toString(10),
         },
@@ -451,6 +446,9 @@ export default {
 <style scoped lang="less">
 @import "../../libs/mixin";
 .add-liquidity {
+  /deep/ .van-nav-bar__content {
+    align-items: inherit;
+  }
   /deep/ .van-button--normal {
     font-size: 17px;
     text-align: left;

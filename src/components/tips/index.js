@@ -1,9 +1,9 @@
 const elementName = "swap-tips"
 
 const icons = {
-  success: "passed",
-  error: "close",
-  default: "info-o"
+  success: "checked",
+  error: "clear",
+  default: "info"
 }
 
 const createBox = () => {

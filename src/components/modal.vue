@@ -5,6 +5,7 @@ van-popup.modal(
   :position="mini ? position : 'center'",
   round,
   :class="{ border: !mini }"
+  get-container="#app"
 )
   .title
     .lable {{ title }}
@@ -53,7 +54,7 @@ export default {
 <style scoped lang="less">
 @import "../libs/mixin";
 .modal {
-  max-width: 600px;
+  max-width: 516px;
   width: 100%;
 
   .title {
@@ -62,6 +63,7 @@ export default {
     padding: 2 * @grid @space;
     font-weight: 500;
     font-size: 20px;
+    text-align: center;
     .value {
       position: absolute;
       right: 0;
@@ -73,14 +75,16 @@ export default {
 }
 
 .border {
-  border: 8px solid #fff;
+  border: 1.5 * @grid solid #fff;
+  // border-width: @grid 1.5 * @grid;
+  margin-left: 20 * @grid;
 }
 
 .van-popup--round {
-  border-radius: 6px;
+  border-radius: @grid !important;
 }
 .van-popup--bottom {
-  border-radius: 6px 6px 0 0;
+  border-radius: 6px 6px 0 0 !important;
 }
 
 .van-popup--top {

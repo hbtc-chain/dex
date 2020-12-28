@@ -1,32 +1,29 @@
 <template lang="pug">
 .open-order
   template(v-if="data.length")
-    .cancel-all
-      van-button(plain, type="primary", size="small", @click="cancelAllOrder") {{ $lang('trade.cancelAll') }}
+    //- .cancel-all
+    //-   van-button(plain, type="primary", size="small", @click="cancelAllOrder") {{ $lang('trade.cancelAll') }}
     Alert(type="error", icon="warning", v-if="errorText") {{ errorText }}
     .item(v-for="item in data")
-      van-row.type
-        van-col
-          strong
-            label.color-error(v-if="item.side") {{ $lang('trade.sell') }}
-            label.color-success(v-else) {{ $lang('trade.buy') }}
-            em {{ item.baseSymbol | toUP }}/{{ item.quoteSymbol | toUP }}
-        van-col
-          span {{ new Date(item.createTime * 1000).format() }}
+      .title
+        .type
+          span(:class="`type-${item.side}`") {{ $lang(`trade.${types[item.side]}`) }}
+          span {{ tokensMap[item.baseSymbol].name }}/{{ tokensMap[item.quoteSymbol].name }}
+        .time {{ new Date(item.createTime * 1000).format() }}
       van-row
         van-col(span="6")
-          label.color-gray500 {{ $lang('trade.openAmount') }}
-        van-col(span="18", v-if="item.side") {{ amountDown(item.amountIn, item.baseSymbol).cutFixed(tokensMap[item.baseSymbol].showDecimals) }} {{ item.baseSymbol | toUP }}
-        van-col(span="18", v-else) {{ amountDown(BigNumber(item.amountIn).div(item.price), item.baseSymbol).cutFixed(tokensMap[item.baseSymbol].showDecimals) }} {{ item.baseSymbol | toUP }}
+          label.color-gray300 {{ $lang('trade.openAmount') }}
+        van-col(span="18", v-if="item.side") {{ amountDown(item.amountIn, item.baseSymbol).cutFixed(tokensMap[item.baseSymbol].showDecimals) }}{{ tokensMap[item.baseSymbol].name }}
+        van-col(span="18", v-else) {{ amountDown(BigNumber(item.amountIn).div(item.price), item.baseSymbol).cutFixed(tokensMap[item.baseSymbol].showDecimals) }}{{ tokensMap[item.baseSymbol].name }}
       van-row
         van-col(span="6")
-          label.color-gray500 {{ $lang('trade.price') }}
-        van-col(span="18") {{ priceDown(item.price, item.quoteSymbol) }} {{ item.quoteSymbol | toUP }}
+          label.color-gray300 {{ $lang('trade.price') }}
+        van-col(span="18") {{ priceDown(item.price, item.quoteSymbol) }} {{ tokensMap[item.quoteSymbol].name }}
       van-row
         van-col(span="6")
-          label.color-gray500 {{ $lang('trade.filled') }}
-        van-col(span="12", v-if="item.side") {{ amountDown(BigNumber(item.amountIn).minus(item.lockedFund), item.baseSymbol).cutFixed(tokensMap[item.baseSymbol].showDecimals) }}{{ item.baseSymbol | toUP }}
-        van-col(span="12", v-else) {{ amountDown(BigNumber(item.amountIn).minus(item.lockedFund).div(item.price), item.baseSymbol).cutFixed(tokensMap[item.baseSymbol].showDecimals) }}{{ item.baseSymbol | toUP }}
+          label.color-gray300 {{ $lang('trade.filled') }}
+        van-col(span="12", v-if="item.side") {{ amountDown(BigNumber(item.amountIn).minus(item.lockedFund), item.baseSymbol).cutFixed(tokensMap[item.baseSymbol].showDecimals) }}{{ tokensMap[item.baseSymbol].name }}
+        van-col(span="12", v-else) {{ amountDown(BigNumber(item.amountIn).minus(item.lockedFund).div(item.price), item.baseSymbol).cutFixed(tokensMap[item.baseSymbol].showDecimals) }}{{ tokensMap[item.baseSymbol].name }}
         van-col.cancel(span="6")
           van-button(
             plain,
@@ -62,6 +59,12 @@ export default {
   data() {
     return {
       errorText: "",
+      types: {
+        1: "sell",
+        2: "buy",
+        3: "add",
+        4: "remove",
+      },
     };
   },
   computed: {
@@ -140,23 +143,52 @@ export default {
   height: 24px;
   font-size: 12px;
   color: @primary-main;
-  border-color: @primary-main;
+  border-color: fade(@primary-main, 10%);
   border-radius: 2px;
   min-width: 52px;
+  background: fade(@primary-main, 10%);
 }
 
 .item {
   padding: @space;
   border-bottom: 1px solid @gray-80;
 
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .type {
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .time {
+      font-size: 12px;
+      color: @gray-500;
+    }
+    span {
+      padding-right: 2 * @grid;
+    }
+  }
+
+  .type-1,
+  .type-3 {
+    color: @error;
+  }
+
+  .type-2,
+  .type-4 {
+    color: @green;
+  }
   .van-row {
     font-size: 12px;
     line-height: 16px;
-    margin-bottom: @grid;
+    padding-top: @grid;
     color: @gray-900;
 
     label {
       margin-right: @grid;
+      color: @gray-300;
     }
 
     .cancel {
@@ -164,42 +196,6 @@ export default {
       position: relative;
       bottom: 8px;
       margin-bottom: -8px;
-    }
-  }
-
-  & .type {
-    min-height: 24px;
-    margin-bottom: @grid;
-
-    & strong {
-      font-size: 15px;
-      line-height: 21px;
-      color: @gray-900;
-
-      & label {
-        min-width: 44px;
-        margin-right: @grid;
-      }
-
-      & em {
-        font-style: normal;
-      }
-    }
-
-    & span {
-      color: @gray-500;
-      font-size: 12px;
-      line-height: 13px;
-    }
-
-    /deep/ .van-col:last-child {
-      float: right;
-    }
-
-    &.red {
-      & strong label {
-        color: @error;
-      }
     }
   }
 }

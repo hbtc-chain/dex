@@ -7,7 +7,7 @@ Modal.confirm-payment(
   .confirm
     van-cell-group(:border="false")
       van-cell(center, size="large")
-        span.value {{ tokenA | toUP }}
+        .value {{ tokenName(tokenA) }}
         template(#title)
           .left
             Logo(size="32", v-if="tokensMap[tokenA]", :tokens="[tokenA]")
@@ -16,7 +16,7 @@ Modal.confirm-payment(
       Icon(name="arrowdown2", size="16")
     van-cell-group(:border="false")
       van-cell(center, size="large")
-        span.value {{ tokenB | toUP }}
+        .value {{ tokenName(tokenB) }}
         template(#title)
           .left
             Logo(size="32", v-if="tokensMap[tokenB]", :tokens="[tokenB]")
@@ -25,7 +25,7 @@ Modal.confirm-payment(
   .note(v-if="data.amountA && data.amountB")
     .item
       .lable {{ $lang('swap.price') }}
-        Icon(name="question")
+        // Icon(name="question")
       .value {{ data.confirmSwapPrice }}
         Icon.icon(
           :class="{ 'color-info': data.reversePrice }",
@@ -35,20 +35,20 @@ Modal.confirm-payment(
         )
     .item(v-if="data.transforDirection == 'B'")
       .lable {{ $lang('swap.minimumReceived') }}
-        Icon(name="question")
-      .value {{ data.result.minimumReceived }} {{ tokenB | toUP }}
+        // Icon(name="question")
+      .value {{ data.result.minimumReceived }} {{ tokenName(tokenB) }}
     .item(v-else)
       .lable {{ $lang('swap.maximumSold') }}
-        Icon(name="question")
-      .value {{ data.result.maximumSold }} {{ tokenA | toUP }}
+        // Icon(name="question")
+      .value {{ data.result.maximumSold }} {{ tokenName(tokenA) }}
     .item
       .lable {{ $lang('swap.priceImpact') }}
-        Icon(name="question")
+        // Icon(name="question")
       .value {{ data.result.priceImpact.cutFixed(2) }}%
     .item
       .lable {{ $lang('swap.liquidityProviderFee') }}
-        Icon(name="question")
-      .value {{ BigNumber(data.amountA).times(data.fee).toString(10) }} {{ tokenB | toUP }}
+        // Icon(name="question")
+      .value {{ BigNumber(data.amountA).times(data.fee).toString(10) }} {{ tokenName(tokenB) }}
     van-button(type="info", block, @click="submit", size="large") {{ $lang('swap.confirmSwap') }}
 </template>
 
@@ -98,16 +98,22 @@ export default {
       if (this.data.transforDirection === "B") {
         return this.$lang("swap.confirmWarningOutput")
           .replace("{amount}", this.data.result.minimumReceived)
-          .replace("{token}", this.tokenB.toLocaleUpperCase());
+          .replace("{token}", this.tokenName(this.tokenB));
       }
       return this.$lang("swap.confirmWarningInput")
         .replace("{amount}", this.data.result.maximumSold)
-        .replace("{token}", this.tokenA.toLocaleUpperCase());
+        .replace("{token}", this.tokenName(this.tokenA));
     },
   },
   methods: {
     ...mapActions(["pushTxs"]),
     BigNumber: Helper.bigNumber,
+    tokenName(symbol) {
+      if (symbol) {
+        return this.tokensMap[symbol].name;
+      }
+      return "";
+    },
     submit() {
       this.paymentSheetWin = false;
       const json = {

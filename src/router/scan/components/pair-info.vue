@@ -1,19 +1,23 @@
 <template lang="pug">
-.info
+.info(v-if="prices[pairInfo.tokenA.symbol]")
   .title
-    Logo(:tokens="pair.split('-')")
-    | {{ pair | toUP }} {{ $lang('scan.pair') }}
-  .item
-    Logo(:tokens="[pairInfo.tokenA.symbol]")
-    | 1 {{ pairInfo.tokenA.symbol | toUP }}={{ pairInfo.tokenA.price.cutFixed(tokensMap[pairInfo.tokenA.symbol].showDecimals) }} {{ pairInfo.tokenB.symbol | toUP }} (${{prices[pairInfo.tokenA.symbol]}})
-  .item
-    Logo(:tokens="[pairInfo.tokenB.symbol]")
-    | 1 {{ pairInfo.tokenB.symbol | toUP }}={{ pairInfo.tokenB.price.cutFixed(tokensMap[pairInfo.tokenB.symbol].showDecimals) }} {{ pairInfo.tokenA.symbol | toUP }} (${{prices[pairInfo.tokenB.symbol]}})
-  van-row(:gutter="8")
-    van-col(span="12")
-      van-button(type="default", :to="`/pool/${pair}`", block) + {{ $lang('scan.pairs.addLiquidity') }}
-    van-col(span="12")
-      van-button(type="info", :to="`/swap/${pair}`", block) {{ $lang('scan.pairs.trade') }}
+      Logo(:tokens="pair.split('-')")
+      | {{ tokensMap[pairInfo.tokenA.symbol].fullName }}-{{ tokensMap[pairInfo.tokenB.symbol].fullName }} {{ $lang('scan.pair') }}
+  van-row
+    van-col(span="8")
+      .item
+        Logo(:tokens="[pairInfo.tokenA.symbol]")
+        | 1 {{ tokensMap[pairInfo.tokenA.symbol].name }} = {{ pairInfo.tokenA.price.cutFixed(6) }} {{ tokensMap[pairInfo.tokenB.symbol].name }}(${{ prices[pairInfo.tokenA.symbol].cutFixed(4) }})
+    van-col(span="8")
+      .item
+        Logo(:tokens="[pairInfo.tokenB.symbol]")
+        | 1 {{ tokensMap[pairInfo.tokenB.symbol].name }} = {{ pairInfo.tokenB.price.cutFixed(6) }}{{ tokensMap[pairInfo.tokenA.symbol].name }} (${{ prices[pairInfo.tokenB.symbol].cutFixed(4) }})
+    van-col(span="8")
+      van-row(:gutter="8")
+        van-col(span="12")
+          van-button(type="default", :to="`/pool/${pair}`", block) + {{ $lang('scan.pairs.addLiquidity') }}
+        van-col(span="12")
+          van-button(type="info", :to="`/swap/${pair}`", block) {{ $lang('scan.pairs.trade') }}
 </template>
 <script>
 import { mapState } from "vuex";
@@ -36,7 +40,7 @@ export default {
     pairInfo() {
       return this.pairs[this.pair];
     },
-  }
+  },
 };
 </script>
 
@@ -45,11 +49,11 @@ export default {
 .info {
   box-shadow: 0px 0px 12px rgba(31, 93, 193, 0.16);
   border-radius: 10px;
-  margin: 0 0 @grid;
+  margin: 0 0 2 * @grid;
   background: #fff;
-  padding: 2 * @grid 3 * @grid;
+  padding: 2 * @grid 2 * @grid;
   .title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -59,15 +63,20 @@ export default {
     display: flex;
     height: 5 * @grid;
     align-items: center;
-    font-size: 17px;
-    font-weight: 500;
+    font-size: 14px;
     color: @gray-500;
-    margin-bottom: 2 * @grid;
   }
   /deep/ .van-button--default {
-    background: @gray-200;
-    color: #fff;
-    border-color: @gray-200;
+    background: fade(@primary-main, 30%);
+    color: @primary-main;
+    margin-right: 6px;
+  }
+  /deep/ .van-button{
+    height: 38px;
+    line-height: 38px;
+    border: none;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
 </style>

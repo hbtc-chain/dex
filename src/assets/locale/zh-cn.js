@@ -127,17 +127,18 @@ export default {
     weekly: "按周统计",
     swapPrice: "OpenSwap HBC 价格",
     totalLiquidity: "总流动性",
-    volume24hrs: "成交额（24小时）",
-    transactions24hrs: "交易数量（24小时）",
+    volume24hrs: "24H成交额",
+    transactions24hrs: "24H交易数量",
     pairs: {
       title: "交易对",
       name: "名称",
       liquidity: "资产流动性",
-      volume24h: "成交额（24小时）",
+      volume24h: "24H成交额",
       volume7d: "成交额（7天）",
-      fees: "手续费（24小时）",
+      fees: "24H手续费",
       addLiquidity: "增加流动性",
-      trade: "交易"
+      trade: "交易",
+      action: "操作"
     },
     transactions: {
       title: "成交",

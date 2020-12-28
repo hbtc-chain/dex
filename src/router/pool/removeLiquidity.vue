@@ -21,19 +21,21 @@ div
         ) {{ item * 25 }}%
     .item
       .lable {{ BigNumber(data.pair.tokenA.amount).times(amount).div(100) }}
-      .value {{ data.pair.tokenA.symbol | toUP }}
+      .value
+        span {{ tokenName(data.pair.tokenA.symbol) }}
         Logo(size="16", :tokens="[data.pair.tokenA.symbol]")
     .item
       .lable {{ BigNumber(data.pair.tokenB.amount).times(amount).div(100) }}
-      .value {{ data.pair.tokenB.symbol | toUP }}
+      .value
+        span {{ tokenName(data.pair.tokenB.symbol) }}
         Logo(size="16", :tokens="[data.pair.tokenB.symbol]")
     .price
       .item
         .lable.color-gray500 {{ $lang('pool.price') }}
-        .value 1 {{ data.pair.tokenA.symbol | toUP }} = {{ BigNumber(data.pair.tokenB.amount).div(data.pair.tokenA.amount).toString(10).cutFixed(8) }} {{ data.pair.tokenB.symbol | toUP }}
+        .value 1 {{ tokenName(data.pair.tokenA.symbol) }} = {{ BigNumber(data.pair.tokenB.amount).div(data.pair.tokenA.amount).toString(10).cutFixed(8) }} {{ tokenName(data.pair.tokenB.symbol) }}
       .item
         .lable &nbsp;
-        .value 1 {{ data.pair.tokenB.symbol | toUP }} = {{ BigNumber(data.pair.tokenA.amount).div(data.pair.tokenB.amount).toString(10).cutFixed(8) }} {{ data.pair.tokenA.symbol | toUP }}
+        .value 1 {{ tokenName(data.pair.tokenB.symbol) }} = {{ BigNumber(data.pair.tokenA.amount).div(data.pair.tokenB.amount).toString(10).cutFixed(8) }} {{ tokenName(data.pair.tokenA.symbol) }}
     Alert(type="error", icon="warning", v-if="errorText") {{ errorText }}
     van-button(
       type="info",
@@ -88,6 +90,12 @@ export default {
     BigNumber: Helper.bigNumber,
     back() {
       this.$emit("input", "list");
+    },
+    tokenName(symbol) {
+      if (symbol) {
+        return this.tokensMap[symbol].name;
+      }
+      return "";
     },
     submit() {
       this.errorText = "";

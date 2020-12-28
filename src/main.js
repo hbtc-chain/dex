@@ -20,7 +20,6 @@ import '@vant/touch-emulator';
 Object.keys(components).forEach((key) => {
   Vue.component(key, components[key]);
 });
-Vue.filter("toUP", (value) => value.toLocaleUpperCase());
 Vue.config.productionTip = false;
 Vue.use(VueI18n);
 Vue.use(Vant);
@@ -129,13 +128,13 @@ const getPairs = (tokensMap, init) => {
           .div(tokensMap[tokenB.symbol].pow)
           .toString(10);
 
-        tokenA.price = Helper.bigNumber(tokenA.amount)
-          .div(tokenB.amount)
+        tokenA.price = Helper.bigNumber(tokenB.amount)
+          .div(tokenA.amount)
           .toString(10)
           .cutFixed(tokensMap[tokenA.symbol].decimals);
 
-        tokenB.price = Helper.bigNumber(tokenB.amount)
-          .div(tokenA.amount)
+        tokenB.price = Helper.bigNumber(tokenA.amount)
+          .div(tokenB.amount)
           .toString(10)
           .cutFixed(tokensMap[tokenB.symbol].decimals);
 
@@ -181,11 +180,14 @@ const getTokens = () => {
       const tokens = result.data.items;
       const tokensMap = {};
       tokens.forEach((el) => {
+        const fullName = el.name.toLocaleUpperCase()
         tokensMap[el.symbol] = {
           ...el,
           pow: Helper.bigNumber(10).pow(el.decimals).toString(10),
           showDecimals: 6,
           logo: el.logo || coinLogo,
+          fullName,
+          name: Helper.Substr(fullName)
         };
       });
 
