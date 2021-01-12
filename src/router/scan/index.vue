@@ -1,5 +1,5 @@
 <template lang="pug">
-.container(:class="{ 'container-small': mini }")
+.container
   Search(v-model="pair")
   PairInfo(:pair="pair", :prices="prices", v-if="pair")
   van-row(:gutter="8")
@@ -72,7 +72,7 @@ export default {
     Block,
   },
   computed: {
-    ...mapState(["tokensMap", "symbols", "delay", "mini"]),
+    ...mapState(["tokensMap", "symbols", "delay"]),
     prices() {
       const price = {};
       Object.keys(this.priceMap).forEach((el) => {

@@ -1,6 +1,6 @@
 <template lang="pug">
 .pool-pair-list
-  vxe-table(:data="slicePairs", border="inner")
+  vxe-table(:data="slicePairs", border="inner", :loading="loading")
     vxe-table-column(
       field="pair",
       :title="$lang('scan.pairs.name')",
@@ -84,6 +84,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       pairs: [],
       currentPage: 1,
       pageSize: 10,
@@ -94,7 +95,9 @@ export default {
       this.currentPage = n;
     },
     getPairsState() {
+      this.loading = true;
       this.$axios.get("/api/v1/analytics/pairsState").then((result) => {
+        this.loading = false;
         if (result.code === 0) {
           this.pairs = result.data.list.map((el) => {
             const item = {
@@ -119,11 +122,11 @@ export default {
 @import "../../../libs/mixin";
 .pool-pair-list {
   /deep/ .van-button--default {
-    background: fade(@primary-main, 30%);
+    background: fade(@primary-main, 10%);
     color: @primary-main;
     margin-right: 6px;
   }
-  /deep/ .van-button{
+  /deep/ .van-button {
     height: 38px;
     line-height: 38px;
     border: none;

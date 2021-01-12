@@ -55,13 +55,13 @@ export default {
 @import "../libs/mixin";
 @font-face {
   font-family: "iconfont"; /* project id 2129214 */
-  src: url("//at.alicdn.com/t/font_2129214_nwzczbn0hs.eot");
-  src: url("//at.alicdn.com/t/font_2129214_nwzczbn0hs.eot?#iefix")
+  src: url("//at.alicdn.com/t/font_2129214_7dv0gdy2hr.eot");
+  src: url("//at.alicdn.com/t/font_2129214_7dv0gdy2hr.eot?#iefix")
       format("embedded-opentype"),
-    url("//at.alicdn.com/t/font_2129214_nwzczbn0hs.woff2") format("woff2"),
-    url("//at.alicdn.com/t/font_2129214_nwzczbn0hs.woff") format("woff"),
-    url("//at.alicdn.com/t/font_2129214_nwzczbn0hs.ttf") format("truetype"),
-    url("//at.alicdn.com/t/font_2129214_nwzczbn0hs.svg#") format("svg");
+    url("//at.alicdn.com/t/font_2129214_7dv0gdy2hr.woff2") format("woff2"),
+    url("//at.alicdn.com/t/font_2129214_7dv0gdy2hr.woff") format("woff"),
+    url("//at.alicdn.com/t/font_2129214_7dv0gdy2hr.ttf") format("truetype"),
+    url("//at.alicdn.com/t/font_2129214_7dv0gdy2hr.svg#") format("svg");
 }
 
 .swap-icon {
@@ -75,6 +75,63 @@ export default {
   &:before {
     display: inline-block;
   }
+
+  &-arrowdown21:before {
+    content: "\e62f";
+  }
+
+  &-announcement:before {
+    content: "\e62e";
+  }
+
+  &-close:before {
+    content: "\e62d";
+  }
+
+  &-deleteaccount:before {
+    content: "\e62c";
+  }
+
+  &-expandview:before {
+    content: "\e62a";
+  }
+
+  &-exchange-dex:before {
+    content: "\e626";
+  }
+
+  &-inportaccount:before {
+    content: "\e622";
+  }
+
+  &-switchaccount:before {
+    content: "\e623";
+  }
+
+  &-addaccount:before {
+    content: "\e624";
+  }
+
+  &-exportaccount:before {
+    content: "\e625";
+  }
+
+  &-refresh:before {
+    content: "\e620";
+  }
+
+  &-exc-fa:before {
+    content: "\e621";
+  }
+
+  &-unhidden:before {
+    content: "\e61e";
+  }
+
+  &-hidden:before {
+    content: "\e61f";
+  }
+
   &-last:before {
     content: "\e627";
   }

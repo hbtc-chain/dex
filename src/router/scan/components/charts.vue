@@ -1,15 +1,15 @@
 <template lang="pug">
 div
-  .option
-    van-button(
-      v-for="(item, key) in option",
-      size="small",
-      :type="interval === item ? 'info' : 'default'",
-      @click="getKline(item)",
-      :key="item"
-    ) {{ $lang(`scan.${key}`) }}
+  //- .option
+  //-   van-button(
+  //-     v-for="(item, key) in option",
+  //-     size="small",
+  //-     :type="interval === item ? 'info' : 'default'",
+  //-     @click="getKline(item)",
+  //-     :key="item"
+  //-   ) {{ $lang(`scan.${key}`) }}
   .charts
-    div(style="height: 300px", ref="charts")
+    div(style="height: 348px", ref="charts")
     .loading
       van-loading(v-if="loading")
 </template>
@@ -182,7 +182,7 @@ export default {
   }
 }
 .charts {
-  height: 314px;
+  height: 362px;
   position: relative;
   .loading {
     position: absolute;

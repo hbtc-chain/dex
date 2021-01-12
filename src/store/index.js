@@ -28,6 +28,7 @@ export default new Vuex.Store({
     symbols: [],
     address: "",
     mini: false,
+    clientWidth: 1000,
     local: "",
     isChrome: Helper.isChrome,
     isFirefox: Helper.isFirefox,

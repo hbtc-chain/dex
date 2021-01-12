@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  vxe-table(:data="sliceTrades", border="inner")
+  vxe-table(:data="sliceTrades", border="inner", :loading="loading")
     template(v-slot:empty)
       van-empty
     vxe-table-column(
@@ -27,20 +27,20 @@ div
     vxe-table-column(
       field="tokenAAmount",
       :title="$lang('scan.transactions.tokenAmount')",
-      minWidth="150"
+      minWidth="150",
       show-overflow
     )
       template(v-slot="{ row }") {{ (row.tokenAAmount || 0).cutFixed(0) }} {{ tokensMap[row.tokenA].name }}
     vxe-table-column(
       field="tokenBAmount",
       :title="$lang('scan.transactions.tokenAmount')",
-      minWidth="150"
+      minWidth="150",
       show-overflow
     )
       template(v-slot="{ row }") {{ (row.tokenBAmount || 0).cutFixed(0) }} {{ tokensMap[row.tokenB].name }}
     vxe-table-column(
       :title="$lang('scan.transactions.account')",
-      minWidth="150"
+      minWidth="150",
       show-overflow
     )
       template(v-slot="{ row }")
@@ -49,7 +49,7 @@ div
       field="time",
       :title="$lang('scan.transactions.time')",
       minWidth="150",
-      sortable
+      sortable,
       align="right"
     )
       template(v-slot="{ row }") {{ new Date(row.time * 1000).format('MM/dd hh:mm:ss') }}
@@ -93,6 +93,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       currentType: "all",
       types: ["all", "swaps", "adds", "removes"],
       trades: [],
@@ -126,6 +127,8 @@ export default {
       return type.replace("{tokenA}", tokenA).replace("{tokenB}", tokenB);
     },
     getRecentTrades() {
+      this.loading = true;
+
       this.$axios
         .get("/api/v1/analytics/recentTrades", {
           params: {
@@ -134,6 +137,7 @@ export default {
           },
         })
         .then((result) => {
+          this.loading = false;
           if (result.code === 0) {
             this.trades = result.data.list.map((el) => {
               const item = {

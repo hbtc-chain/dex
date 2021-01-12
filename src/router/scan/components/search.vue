@@ -12,15 +12,15 @@
   )
   .result(v-show="searchResultStatus")
     .title {{ $lang(searchLists.length ? 'scan.result' : 'scan.noResult') }}
-    //- template(v-if="searchLists.length")
-    //-   router-link.token(
-    //-     :key="`${item.tokenA.symbol}-${item.tokenB.symbol}`"
-    //-     v-for="item in searchLists",
-    //-     @click.native="searchResultStatus = false",
-    //-     :to="{ name: 'scanDetail', params: { id: `${item.tokenA.symbol}-${item.tokenB.symbol}` } }"
-    //-   )
-    //-     Logo(:tokens="[item.tokenA.symbol, item.tokenB.symbol]")
-    //-     | {{ item.id | toUP }}
+    template(v-if="searchLists.length")
+      router-link.token(
+        :key="`${item.tokenA.symbol}-${item.tokenB.symbol}`",
+        v-for="item in searchLists",
+        @click.native="searchResultStatus = false",
+        :to="{ name: 'scanDetail', params: { id: `${item.tokenA.symbol}-${item.tokenB.symbol}` } }"
+      )
+        | {{ tokensMap[item.tokenA.symbol].fullName }}-{{ tokensMap[item.tokenB.symbol].fullName }}
+        Logo(:tokens="[item.tokenA.symbol, item.tokenB.symbol]")
 </template>
 <script>
 import { mapState } from "vuex";
@@ -36,14 +36,22 @@ export default {
   computed: {
     ...mapState(["tokensMap", "symbols"]),
     searchLists() {
-      const keyword = this.keyword.toLocaleLowerCase().trim();
-      const symbols = this.symbols.filter((el) => {
-        if (keyword.length > 1) {
-          return el.id.indexOf(keyword) > -1;
-        }
-        return el.verified;
-      });
-      return symbols;
+      const keyword = this.keyword.toLocaleUpperCase().trim();
+      return this.symbols
+        .filter((el) => {
+          if (keyword.length > 1) {
+            return (
+              [
+                this.tokensMap[el.tokenA.symbol].fullName,
+                this.tokensMap[el.tokenB.symbol].fullName,
+              ]
+                .join("-")
+                .indexOf(keyword) > -1
+            );
+          }
+          return el.verified;
+        })
+        .slice(0, 10);
     },
   },
   data() {
@@ -81,7 +89,7 @@ export default {
     &__control {
       height: 5 * @grid;
     }
-    &__left-icon .van-icon{
+    &__left-icon .van-icon {
       line-height: 5 * @grid;
     }
   }

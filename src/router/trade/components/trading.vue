@@ -253,7 +253,7 @@ export default {
         name: "sign",
         data: json,
         success: (result) => {
-          this.amount = 0;
+          this.amount = "";
           this.$emit("click", result);
           this.pushTxs(result.data);
         },
@@ -335,6 +335,9 @@ export default {
     margin-bottom: 2 * @space;
     height: 36px;
     line-height: 36px;
+    .label{
+      white-space: nowrap;
+    }
 
     .value {
       max-width: 70%;

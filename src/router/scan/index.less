@@ -5,16 +5,24 @@
     margin: 0 auto;
     padding: 0 2 * @grid 2 * @grid;
 
-    &-small {
 
-        /deep/ .van-col--8,
-        /deep/ .van-col--16 {
-            width: 100%;
-            padding-right: 0 !important;
-            padding-left: 0 !important;
-        }
+}
+
+@media (max-width: 840px) {
+    .container {
+        max-width: 560px
     }
 }
+
+@media (max-width: 1200px) {
+    /deep/ .van-col--8,
+    /deep/ .van-col--16 {
+        width: 100%;
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+}
+
 
 .small-logo {
     margin-top: -0.5 * @grid;
@@ -33,6 +41,7 @@
         font-size: 16px;
         height: 28px;
         font-weight: 400;
+
         span {
             color: @gray-700;
         }

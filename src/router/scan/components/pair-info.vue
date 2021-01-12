@@ -67,7 +67,7 @@ export default {
     color: @gray-500;
   }
   /deep/ .van-button--default {
-    background: fade(@primary-main, 30%);
+    background: fade(@primary-main, 10%);
     color: @primary-main;
     margin-right: 6px;
   }

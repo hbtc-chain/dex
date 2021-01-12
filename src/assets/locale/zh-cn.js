@@ -28,7 +28,9 @@ export default {
     success: "成功",
     failed: "失败",
     processing: "处理中...",
-    clearAll: "清空"
+    clearAll: "清空",
+    noData: "您的近期交易记录会显示在这里",
+    copy: "已复制"
   },
   swap: {
     route: "路由",
