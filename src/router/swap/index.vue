@@ -337,6 +337,9 @@ export default {
     submit(result) {
       if (result.code !== 200) {
         this.errorText = result.msg;
+      } else {
+        this.amountA = "";
+        this.amountB = "";
       }
     },
     confirmSwap() {

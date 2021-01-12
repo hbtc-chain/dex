@@ -13,7 +13,7 @@ Modal.confirm-payment(
             Logo(size="32", v-if="tokensMap[tokenA]", :tokens="[tokenA]")
             .title.color-gray900 {{ data.amountA }}
     van-divider(dashed, content-position="left")
-      Icon(name="arrowdown2", size="16")
+      Icon(name="arrowdown2", size="16" fill)
     van-cell-group(:border="false")
       van-cell(center, size="large")
         .value {{ tokenName(tokenB) }}
@@ -246,6 +246,7 @@ export default {
     border-radius: 6px;
     padding: @space;
     position: relative;
+    margin:0 10px 10px;
 
     .item {
       display: flex;

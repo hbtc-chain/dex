@@ -89,6 +89,7 @@ export default {
 <style scoped lang="less">
 @import "../libs/mixin";
 .menu {
+  padding-bottom: 30px;
   .van-cell {
     padding: 0;
     cursor: pointer;

@@ -17,13 +17,14 @@ import VXETable from 'vxe-table'
 import 'vxe-table/lib/style.css'
 import '@vant/touch-emulator';
 
-Object.keys(components).forEach((key) => {
-  Vue.component(key, components[key]);
-});
 Vue.config.productionTip = false;
 Vue.use(VueI18n);
 Vue.use(Vant);
 Vue.use(VXETable)
+
+Object.keys(components).forEach((key) => {
+  Vue.component(key, components[key]);
+});
 
 Object.defineProperty(Vue.prototype, "$tips", {
   value: tips
@@ -168,6 +169,11 @@ const getPairs = (tokensMap, init) => {
       })
 
       if (init) {
+        const loading = document.querySelector('.full-loading')
+        loading.className = ['full-loading', 'full-loading-out'].join(' ')
+        setTimeout(() => {
+          loading.parentElement.removeChild(loading)
+        }, 300);
         render()
       }
     }

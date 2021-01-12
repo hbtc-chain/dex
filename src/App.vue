@@ -6,6 +6,13 @@
         router-link(to="/")
           img(src="@/assets/logo_w.png")
       .icon
+        van-badge(:content="processNumber", v-if="address")
+          Icon(
+            name="importbykeystore",
+            size="24",
+            @click="processWin = true",
+            @touchstart="processWin = true"
+          )
         Icon(name="menus", size="24", @click="menuStatus = true")
   .swap-content
     router-view
@@ -18,18 +25,15 @@
   )
     .toper
       img.logo(src="@/assets/logo.png")
-      van-icon.icon(
-        name="cross",
-        size="20",
-        @click="menuStatus = false",
-        v-if="mini"
-      )
+      van-icon.icon(name="cross", size="20", @click="menuStatus = true", v-if="mini")
     .user
       template(v-if="address")
-        .account
+        .account(@click="openProcess") {{ address.substring(0, 6) }} ... {{ address.substring(address.length - 4, address.length) }}
+          van-badge(:content="processNumber")
+            Icon(name="arrowright", size="24")
+        .balance
           Logo(:tokens="['hbc']")
-          | {{ address.substring(0, 6) }} ... {{ address.substring(address.length - 4, address.length) }}
-        .balance {{ asset }} HBC
+          | {{ asset }} HBC
       van-button(type="info", block, @click="connectWalletWin = true", v-else) {{ $lang('head.connectWallet') }}
 
     Menu(@click="menuStatus = false")
@@ -58,11 +62,12 @@
             van-field(v-model="config.transactionDeadline", type="number")
           van-col(span="15") {{ $lang('swap.minutes') }}
   WalletModal(v-model="connectWalletWin")
+  Process(v-model="processWin")
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex";
-import Head from "@/components/head.vue";
+import Process from "@/components/process.vue";
 
 export default {
   computed: {
@@ -82,9 +87,12 @@ export default {
       }
       return a;
     },
+    processNumber() {
+      return this.hashList.filter((el) => !el.result).length || "";
+    },
   },
   components: {
-    Head,
+    Process,
   },
   data() {
     return {
@@ -93,6 +101,7 @@ export default {
       transactionDeadline: 20,
       menuStatus: false,
       connectWalletWin: false,
+      processWin: false,
     };
   },
   watch: {
@@ -107,9 +116,16 @@ export default {
   },
   methods: {
     ...mapActions(["wallteInit", "setState", "pushTxs"]),
+    openProcess() {
+      this.menuStatus = false;
+      this.processWin = true;
+    },
     resize() {
-      const mini = document.documentElement.clientWidth < 640;
-      this.setState({ mini });
+      const mini = document.documentElement.clientWidth < 840;
+      this.setState({
+        mini,
+        clientWidth: document.documentElement.clientWidth,
+      });
       if (mini) {
         this.menuStatus = false;
       } else {
@@ -166,13 +182,17 @@ export default {
   }
   .icon {
     color: @white;
+    i {
+      margin-left: 2 * @grid;
+    }
   }
 }
 
 .swap-menu {
   width: 26 * @grid;
-  padding: 8 * @grid 2 * @grid 0;
+  padding: 0 2 * @grid;
   .toper {
+    padding-top: 8 * @grid;
     padding-bottom: 3 * @grid;
     display: flex;
     justify-content: space-between;
@@ -182,41 +202,43 @@ export default {
     }
   }
   .user {
-    box-shadow: 0px 0px 12px rgba(31, 93, 193, 0.16);
-    border-radius: 6px;
+    background: @gray-100;
+    border-radius: @grid;
     overflow: hidden;
+    border: 1px solid @gray-100;
   }
   .account {
     .text-hide;
-    padding: 2 * @grid 0;
-    margin: 0 3 * @grid;
-    line-height: 3 * @grid;
+    padding: 2 * @grid 12px 2 * @grid 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: @gray-500;
+  }
+  .balance {
+    padding: @grid 20px;
+    height: 3 * @grid;
+    background: @white;
+    font-size: 14px;
+    color: @primary-main;
     display: flex;
     align-content: center;
     /deep/ .van-image {
       vertical-align: middle;
-      margin-right: @grid;
     }
-  }
-  .balance {
-    padding: 2 * @grid 3 * @grid;
-    line-height: 3 * @grid;
-    height: 3 * @grid;
-    background: fade(@primary-main, 30%);
-    font-size: 17px;
-    font-weight: 500;
   }
 }
 
 .swap-full {
   .swap-content {
-    margin-left: 40 * @grid;
+    margin-left: 35 * @grid;
   }
   .swap-menu {
-    width: 30 * @grid;
-    padding: 20 * @grid 5 * @grid 0;
+    width: 27 * @grid;
+    padding: 0 4 * @grid;
 
     .toper {
+      padding-top: 10 * @grid;
       .logo {
         height: 4 * @grid;
       }

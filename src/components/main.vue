@@ -47,7 +47,13 @@ export default {
 }
 
 .content {
-  padding: 3 * @grid @space 2 * @grid;
+  padding: 3 * @grid;
+}
+
+@media (max-width: 880px) {
+  .content {
+    padding: 3 * @grid @space 2 * @grid;
+  }
 }
 
 .tabs {

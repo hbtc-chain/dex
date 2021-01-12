@@ -28,7 +28,9 @@ export default {
     success: "Success",
     failed: "Failed",
     processing: "Processing...",
-    clearAll: "Clear all"
+    clearAll: "Clear all",
+    noData: "Your recent transaction records will be shown here",
+    copy: "Copied"
   },
   swap: {
     route: "Route",

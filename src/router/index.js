@@ -46,7 +46,11 @@ const routes = [{
   path: "/scan/:id",
   name: "scanDetail",
   component: () => import("./scan/index.vue"),
-}
+},
+{
+  path: "*",
+  redirect: "/swap",
+},
 ];
 
 const router = new VueRouter({

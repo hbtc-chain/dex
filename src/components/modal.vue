@@ -2,9 +2,9 @@
 van-popup.modal(
   v-model="visible",
   :safe-area-inset-bottom="false",
-  :position="mini ? position : 'center'",
+  :position="clientWidth <= 560 ? position : 'center'",
   round,
-  :class="{ border: !mini }"
+  :class="{ position: !mini }",
   get-container="#app"
 )
   .title
@@ -33,7 +33,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["mini"]),
+    ...mapState(["mini", "clientWidth"]),
   },
   data() {
     return {
@@ -56,7 +56,7 @@ export default {
 .modal {
   max-width: 516px;
   width: 100%;
-
+  border: 1.5 * @grid solid #fff;
   .title {
     position: relative;
     line-height: 3 * @grid;
@@ -74,10 +74,14 @@ export default {
   }
 }
 
-.border {
-  border: 1.5 * @grid solid #fff;
-  // border-width: @grid 1.5 * @grid;
-  margin-left: 20 * @grid;
+@media (max-width: 560px) {
+  .modal {
+    border-width: 0;
+  }
+}
+
+.position {
+  margin-left: 17.5 * @grid;
 }
 
 .van-popup--round {
@@ -88,6 +92,6 @@ export default {
 }
 
 .van-popup--top {
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 6px 6px !important;;
 }
 </style>

@@ -167,7 +167,8 @@ export default {
     top: 110px;
     bottom: 0;
     position: absolute;
-    width: 100%;
+    left:10px;
+    right:10px;
     overflow: hidden;
     will-change: transform;
     direction: ltr;

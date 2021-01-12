@@ -1,7 +1,7 @@
 <template lang="pug">
 .order-history
   template(v-if="data.length")
-    .item(v-for="item in sliceTrades")
+    .item(v-for="item in sliceTrades", @click="openUrl(item.txHash)")
       .title
         .type
           span(:class="`type-${item.type}`") {{ $lang(`trade.${types[item.type]}`) }}
@@ -57,7 +57,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["address", "tokensMap"]),
+    ...mapState(["address", "tokensMap", "chainLink", "local"]),
     sliceTrades() {
       return this.data.slice(
         (this.currentPage - 1) * this.pageSize,
@@ -81,6 +81,9 @@ export default {
     changePage(n) {
       this.currentPage = n;
     },
+    openUrl(text) {
+      window.location.href = `${this.chainLink}/txs/${text}?lang=${this.local}`;
+    },
   },
 };
 </script>
@@ -100,6 +103,7 @@ export default {
 .item {
   padding: @space;
   border-bottom: 1px solid @gray-80;
+  cursor: pointer;
 
   .title {
     display: flex;

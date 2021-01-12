@@ -546,6 +546,7 @@ export default {
     border-radius: 6px;
     padding: @space;
     position: relative;
+    margin:0 10px 10px;
 
     .item {
       display: flex;

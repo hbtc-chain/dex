@@ -154,7 +154,7 @@ const nextStep = (opt, data) => {
 };
 
 const callHandler = (opt) => {
-  if (opt.data) {
+  if (opt.data && opt.data.type !== "hbtcchain/openswap/MsgCancelLimitSwap") {
     Object.assign(opt.data.value, { dex_id: 0 })
   }
   console.log(opt.data)
