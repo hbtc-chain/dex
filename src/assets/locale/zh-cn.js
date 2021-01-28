@@ -44,6 +44,7 @@ export default {
     max: "全部",
     slippageTolerance: "滑点容忍度",
     price: "价格",
+    reversePrice: "反向价格",
     swap: "兑换",
     minimumReceived: "最小接收额",
     minimumReceivedTip: "如果交易确认之前出现了不利的大幅价格变动，您的交易将退回。",
@@ -88,7 +89,8 @@ export default {
     pooled: "已投资",
     yourPoolShare: "你的份额占比",
     depositedToken: "存入 {token}",
-    notSupported: "暂时不支持测试币对接跨链代币交换。"
+    notSupported: "暂时不支持测试币对接跨链代币交换。",
+    youWillReceive: "您将获得"
   },
   trade: {
     history: "历史成交",

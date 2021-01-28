@@ -16,7 +16,10 @@
     .lable {{ $lang('swap.liquidityProviderFee') }}
       // Icon(name="question")
     .value {{ BigNumber(data.amountA).times(data.fee).toString(10) }} {{ data.tokenName(data.tokenB) }}
-  router-link.view(:to="viewLink") {{ $lang('swap.viewPairAnalytics') }}
+  router-link.view(
+    :to="{ name: 'scanDetail', params: { id: pairId } }",
+    v-if="pairId"
+  ) {{ $lang('swap.viewPairAnalytics') }}
   .route(v-if="data.result.route.length > 1")
     .item
       .lable {{ $lang('swap.route') }}
@@ -48,13 +51,9 @@ export default {
   },
   computed: {
     ...mapState(["pairs"]),
-    viewLink() {
-      return {
-        name: "scanDetail",
-        params: {
-          id: this.pairs[[this.data.tokenA, this.data.tokenB].join("-")].id,
-        },
-      };
+    pairId() {
+      const pairId = [this.data.tokenA, this.data.tokenB].join("-");
+      return this.pairs[pairId] ? this.pairs[pairId].id : "";
     },
   },
   data() {

@@ -19,16 +19,16 @@ div
           :type="amount == item * 25 ? 'info' : 'default'",
           @click="amount = item * 25"
         ) {{ item * 25 }}%
-    .item
-      .lable {{ BigNumber(data.pair.tokenA.amount).times(amount).div(100) }}
-      .value
-        span {{ tokenName(data.pair.tokenA.symbol) }}
-        Logo(size="16", :tokens="[data.pair.tokenA.symbol]")
-    .item
-      .lable {{ BigNumber(data.pair.tokenB.amount).times(amount).div(100) }}
-      .value
-        span {{ tokenName(data.pair.tokenB.symbol) }}
-        Logo(size="16", :tokens="[data.pair.tokenB.symbol]")
+
+    .info
+      h4 {{ $lang('pool.youWillReceive') }}
+      van-row
+        van-col(span="12")
+          strong {{ BigNumber(data.pair.tokenA.amount).times(amount).div(100).toString(10).cutFixed(8) }}
+          span {{ tokenName(data.pair.tokenA.symbol) }}
+        van-col(span="12")
+          strong {{ BigNumber(data.pair.tokenB.amount).times(amount).div(100).toString(10).cutFixed(8) }}
+          span {{ tokenName(data.pair.tokenB.symbol) }}
     .price
       .item
         .lable.color-gray500 {{ $lang('pool.price') }}
@@ -165,26 +165,39 @@ export default {
   }
 }
 
-.item {
-  display: flex;
-  justify-content: space-between;
-  line-height: 4 * @grid;
+.info {
+  background: linear-gradient(0deg, #f9f9fb, #f9f9fb), #f4f7ff;
+  padding: 1.5 * @grid;
+  margin-bottom: 2 * @grid;
+  line-height: 1.5;
 
-  /deep/ .van-logos {
-    margin-left: 0.5 * @grid;
-    padding-right: 0;
-  }
-  .value {
-    display: flex;
-    align-items: center;
+  strong {
+    display: block;
+    .text-hide;
   }
 
-  .label {
-    display: flex;
-    align-items: center;
-    line-height: 32px;
+  span {
+    display: block;
+    color: @gray-300;
+    font-size: 12px;
+    padding-top: 0.5 * @grid;
+  }
+
+  h4 {
+    margin: 0 0 @grid;
+    color: @gray-700;
+    font-weight: 500;
+  }
+
+  /deep/ .van-col--8:last-child {
+    text-align: right;
+  }
+
+  /deep/ .van-col--8:nth-child(2) {
+    text-align: center;
   }
 }
+
 .price {
   background: linear-gradient(0deg, #f9f9fb, #f9f9fb), #f4f7ff;
   padding: 1.5 * @grid;

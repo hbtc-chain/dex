@@ -44,6 +44,7 @@ export default {
     max: "MAX",
     slippageTolerance: "Slippage Tolerance",
     price: "Price",
+    reversePrice: "Reverse Price",
     swap: "Swap",
     minimumReceived: "Minimum Received",
     minimumReceivedTip: "Your transaction will revert if there is a large,unfavourite price movement before it is confirmed.",
@@ -88,7 +89,8 @@ export default {
     pooled: "Pooled",
     yourPoolShare: "Your pool share",
     depositedToken: "{token} Deposited",
-    notSupported: "HBTC Chain Testnet Tokens swap with Cross-chain tokens not supported now."
+    notSupported: "HBTC Chain Testnet Tokens swap with Cross-chain tokens not supported now.",
+    youWillReceive: "You will receive"
   },
   trade: {
     history: "Order History",
