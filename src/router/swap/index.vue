@@ -28,7 +28,10 @@ Main.swap
             type="number"
           )
             template(#extra)
-              a.max(@click="maxAmount(tipBalance(tokenA, 'amount'))") {{ $lang('swap.max') }}
+              a.max(
+                @click="maxAmount(tipBalance(tokenA, 'amount'), 'B')",
+                v-show="tipBalance(tokenA, 'showAmount')"
+              ) {{ $lang('swap.max') }}
     FormItem.option
       van-row(gutter="8")
         van-col(span="12")
@@ -66,14 +69,20 @@ Main.swap
             @input="inputAmount('A')",
             type="number"
           )
-    FormItem(:lable="$lang('swap.price')", v-if="amountA && amountB")
-      template(slot="tips") {{ swapPrice }}
-        Icon.icon(
-          :class="{ 'color-info': reversePrice }",
-          @click="reversePrice = !reversePrice",
-          name="exchange",
-          size="24"
-        )
+            template(#extra)
+              a.max(
+                @click="maxAmount(tipBalance(tokenB, 'amount'), 'A')",
+                v-show="tipBalance(tokenB, 'showAmount')"
+              ) {{ $lang('swap.max') }}
+    template(v-if="prices.swapPrice")
+      FormItem.price(:lable="$lang('swap.price')")
+        template(slot="tips") 1 {{ tokenName(tokenA) }} =
+          strong.color-gray900 {{ prices.swapPrice }}
+          | {{ tokenName(tokenB) }}
+      FormItem.price(:lable="$lang('swap.reversePrice')")
+        template(slot="tips") 1 {{ tokenName(tokenB) }} =
+          strong.color-gray900 {{ prices.swapReversePrice }}
+          | {{ tokenName(tokenA) }}
     FormItem(:lable="$lang('swap.slippageTolerance')")
       template(slot="tips") {{ config.slippageTolerance }}%
     Alert(type="error", icon="warning", v-if="errorText") {{ errorText }}
@@ -144,8 +153,6 @@ export default {
       currentDirection: "",
       focusDirection: null,
       transforDirection: "B",
-
-      reversePrice: false,
 
       tokenA: "",
       amountA: "",
@@ -224,38 +231,29 @@ export default {
       }
       return `${this.$lang("swap.to")}(${this.$lang("swap.estimated")})`;
     },
-    computeSwapPrice() {
-      if (this.reversePrice) {
-        const price = Helper.bigNumber(this.amountB)
-          .div(this.amountA)
-          .toString(10)
-          .cutFixed(this.tokensMap[this.tokenB].showDecimals);
-        return [this.tokenB, this.tokenA, price];
+    prices() {
+      if (this.tokenA && this.tokenB && this.amountA && this.amountB) {
+        return {
+          swapReversePrice: Helper.bigNumber(this.amountA)
+            .div(this.amountB)
+            .toString(10)
+            .cutFixed(this.tokensMap[this.tokenA].showDecimals),
+          swapPrice: Helper.bigNumber(this.amountB)
+            .div(this.amountA)
+            .toString(10)
+            .cutFixed(this.tokensMap[this.tokenB].showDecimals),
+        };
       }
-      const price = Helper.bigNumber(this.amountA)
-        .div(this.amountB)
-        .toString(10)
-        .cutFixed(this.tokensMap[this.tokenA].showDecimals);
-      return [this.tokenA, this.tokenB, price];
-    },
-
-    swapPrice() {
-      const [tokenA, tokenB, price] = this.computeSwapPrice;
-      const str = this.$lang("swap.swapPrice");
-      return str
-        .replace("{tokenA}", this.tokenName(tokenA))
-        .replace("{tokenB}", this.tokenName(tokenB))
-        .replace("{price}", price);
-    },
-
-    confirmSwapPrice() {
-      const [tokenA, tokenB, price] = this.computeSwapPrice;
-      return `${price} ${this.tokenName(tokenA)}/${this.tokenName(tokenB)}`;
+      return {
+        swapPrice: "",
+        swapReversePrice: "",
+      };
     },
   },
 
   methods: {
     ...mapActions(["setState"]),
+
     tokenName(symbol) {
       if (symbol) {
         return this.tokensMap[symbol].name;
@@ -337,9 +335,6 @@ export default {
     submit(result) {
       if (result.code !== 200) {
         this.errorText = result.msg;
-      } else {
-        this.amountA = "";
-        this.amountB = "";
       }
     },
     confirmSwap() {
@@ -378,13 +373,13 @@ export default {
 
       this.tokenB = clone.tokenA;
       this.tokenA = clone.tokenB;
+      this.amountA = clone.amountB;
+      this.amountB = clone.amountA;
 
       if (this.transforDirection === "A") {
         this.transforDirection = "B";
-        this.amountA = clone.amountB;
       } else {
         this.transforDirection = "A";
-        this.amountB = clone.amountA;
       }
 
       this.computedAmount();
@@ -434,10 +429,14 @@ export default {
     },
 
     // 设置 A && B 最大值
-    maxAmount(amount) {
+    maxAmount(amount, direction) {
       if (amount) {
-        this.transforDirection = "B";
-        this.amountA = amount;
+        this.transforDirection = direction;
+        if (direction === "B") {
+          this.amountA = amount;
+        } else {
+          this.amountB = amount;
+        }
         this.computedAmount();
       }
     },

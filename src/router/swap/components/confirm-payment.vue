@@ -13,7 +13,7 @@ Modal.confirm-payment(
             Logo(size="32", v-if="tokensMap[tokenA]", :tokens="[tokenA]")
             .title.color-gray900 {{ data.amountA }}
     van-divider(dashed, content-position="left")
-      Icon(name="arrowdown2", size="16" fill)
+      Icon(name="arrowdown2", size="16", fill)
     van-cell-group(:border="false")
       van-cell(center, size="large")
         .value {{ tokenName(tokenB) }}
@@ -25,14 +25,14 @@ Modal.confirm-payment(
   .note(v-if="data.amountA && data.amountB")
     .item
       .lable {{ $lang('swap.price') }}
-        // Icon(name="question")
-      .value {{ data.confirmSwapPrice }}
-        Icon.icon(
-          :class="{ 'color-info': data.reversePrice }",
-          @click="data.reversePrice = !data.reversePrice",
-          name="exchange",
-          size="24"
-        )
+      .value 1 {{ tokenName(tokenA) }} =
+        strong.color-gray900 {{ data.prices.swapPrice }}
+        | {{ tokenName(tokenB) }}
+    .item
+      .lable {{ $lang('swap.reversePrice') }}
+      .value 1 {{ tokenName(tokenB) }} =
+        strong.color-gray900 {{ data.prices.swapReversePrice }}
+        | {{ tokenName(tokenA) }}
     .item(v-if="data.transforDirection == 'B'")
       .lable {{ $lang('swap.minimumReceived') }}
         // Icon(name="question")
@@ -246,12 +246,16 @@ export default {
     border-radius: 6px;
     padding: @space;
     position: relative;
-    margin:0 10px 10px;
+    margin: 0 10px 10px;
 
     .item {
       display: flex;
       justify-content: space-between;
       line-height: 4 * @grid;
+
+      strong{
+        margin:0 5px;
+      }
 
       i {
         margin-left: 0.5 * @grid;

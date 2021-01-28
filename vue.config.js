@@ -49,7 +49,7 @@ module.exports = {
     open: true,
     proxy: {
       "/api": {
-        target: "https://juswap.io/"
+        target: "https://dex.hbtcchain.io/"
       }
     }
   }
